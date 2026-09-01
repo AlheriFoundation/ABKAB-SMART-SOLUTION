@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
+  <rect width="800" height="450" fill="#f0fff4"/>
+  <!-- central switch -->
+  <rect x="340" y="180" width="120" height="70" rx="10" fill="#0e7a4a"/>
+  <rect x="356" y="196" width="12" height="8" rx="2" fill="#a7f3c0"/>
+  <rect x="376" y="196" width="12" height="8" rx="2" fill="#a7f3c0"/>
+  <rect x="396" y="196" width="12" height="8" rx="2" fill="#a7f3c0"/>
+  <rect x="416" y="196" width="12" height="8" rx="2" fill="#a7f3c0"/>
+  <text x="400" y="235" text-anchor="middle" fill="#fff" font-family="Poppins, Arial" font-size="14" font-weight="700">SWITCH</text>
+  <!-- connections -->
+  <g stroke="#51cf66" stroke-width="3" fill="none">
+    <path d="M340 215 H 180 V 150"/>
+    <path d="M340 215 H 180 V 300"/>
+    <path d="M460 215 H 620 V 150"/>
+    <path d="M460 215 H 620 V 300"/>
+    <path d="M400 180 V 90"/>
+  </g>
+  <!-- devices -->
+  <rect x="140" y="110" width="80" height="40" rx="8" fill="#ffffff" stroke="#51cf66"/>
+  <rect x="140" y="280" width="80" height="40" rx="8" fill="#ffffff" stroke="#51cf66"/>
+  <rect x="580" y="110" width="80" height="40" rx="8" fill="#ffffff" stroke="#51cf66"/>
+  <rect x="580" y="280" width="80" height="40" rx="8" fill="#ffffff" stroke="#51cf66"/>
+  <!-- router/cloud -->
+  <ellipse cx="400" cy="70" rx="55" ry="26" fill="#ffffff" stroke="#0e7a4a" stroke-width="3"/>
+  <text x="400" y="76" text-anchor="middle" fill="#0e7a4a" font-family="Poppins, Arial" font-size="13" font-weight="700">Wi-Fi</text>
+</svg>

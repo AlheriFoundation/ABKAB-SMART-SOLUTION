@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
+  <rect width="800" height="450" fill="#eef4ff"/>
+  <!-- browser window -->
+  <rect x="120" y="60" width="560" height="330" rx="14" fill="#ffffff" stroke="#dbe4f5"/>
+  <rect x="120" y="60" width="560" height="46" rx="14" fill="#dbe9ff"/>
+  <circle cx="150" cy="83" r="7" fill="#ff6b6b"/><circle cx="174" cy="83" r="7" fill="#ffd43b"/><circle cx="198" cy="83" r="7" fill="#51cf66"/>
+  <rect x="230" y="72" width="300" height="22" rx="11" fill="#ffffff"/>
+  <!-- hero area -->
+  <rect x="150" y="130" width="300" height="26" rx="6" fill="#0066ff" opacity=".85"/>
+  <rect x="150" y="168" width="240" height="12" rx="6" fill="#c9d6f0"/>
+  <rect x="150" y="190" width="200" height="12" rx="6" fill="#c9d6f0"/>
+  <rect x="150" y="220" width="110" height="34" rx="8" fill="#ff2b2b"/>
+  <!-- hero image block -->
+  <rect x="480" y="126" width="170" height="128" rx="10" fill="#3d5afe" opacity=".15"/>
+  <rect x="500" y="150" width="130" height="80" rx="6" fill="#3d5afe" opacity=".35"/>
+  <!-- three content cards -->
+  <rect x="150" y="290" width="150" height="70" rx="8" fill="#f5f8ff" stroke="#dbe4f5"/>
+  <rect x="325" y="290" width="150" height="70" rx="8" fill="#f5f8ff" stroke="#dbe4f5"/>
+  <rect x="500" y="290" width="150" height="70" rx="8" fill="#f5f8ff" stroke="#dbe4f5"/>
+</svg>

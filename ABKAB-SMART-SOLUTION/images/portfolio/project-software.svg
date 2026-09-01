@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
+  <rect width="800" height="450" fill="#eefaff"/>
+  <!-- dashboard window -->
+  <rect x="100" y="50" width="600" height="350" rx="14" fill="#ffffff" stroke="#cfe8f7"/>
+  <rect x="100" y="50" width="140" height="350" rx="14" fill="#0b3a5b"/>
+  <rect x="124" y="86" width="92" height="12" rx="6" fill="#7fd1ff"/>
+  <rect x="124" y="120" width="92" height="10" rx="5" fill="#3a6b8f"/>
+  <rect x="124" y="146" width="92" height="10" rx="5" fill="#3a6b8f"/>
+  <rect x="124" y="172" width="92" height="10" rx="5" fill="#3a6b8f"/>
+  <!-- stat cards -->
+  <rect x="270" y="86" width="120" height="70" rx="8" fill="#e3f4ff"/>
+  <rect x="410" y="86" width="120" height="70" rx="8" fill="#e3f4ff"/>
+  <rect x="550" y="86" width="120" height="70" rx="8" fill="#e3f4ff"/>
+  <!-- bar chart -->
+  <rect x="290" y="250" width="30" height="110" rx="4" fill="#0066ff"/>
+  <rect x="335" y="210" width="30" height="150" rx="4" fill="#0066ff" opacity=".75"/>
+  <rect x="380" y="270" width="30" height="90" rx="4" fill="#0066ff" opacity=".55"/>
+  <rect x="425" y="190" width="30" height="170" rx="4" fill="#0066ff"/>
+  <!-- line chart -->
+  <polyline points="490,320 520,290 550,300 580,250 610,260 640,210" fill="none" stroke="#12b76a" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="640" cy="210" r="6" fill="#12b76a"/>
+</svg>

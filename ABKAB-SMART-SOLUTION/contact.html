@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact — ABKAB SMART SOLUTION</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="index.html" class="brand" aria-label="ABKAB Smart Solutions home"><img src="images/logo.svg" alt="ABKAB Smart Solutions logo" class="brand-logo-image"><span class="brand-text">SMART SOLUTION</span></a>
+      <button class="nav-toggle" id="navToggle5" aria-controls="mainNav5" aria-expanded="false" aria-label="Toggle navigation"><i class="fas fa-bars"></i></button>
+      <nav class="main-nav" id="mainNav5">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="portfolio.html">Portfolio</a></li>
+          <li><a href="contact.html" class="active">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="container contact-page">
+    <h1>Contact Us</h1>
+    <p class="muted">We're ready to help — send a message and we'll get back to you.</p>
+
+    <div class="contact-grid">
+      <form id="contactForm" class="contact-form">
+        <label>Full Name <input type="text" name="name" required></label>
+        <label>Email Address <input type="email" name="email" required></label>
+        <label>Phone Number <input type="tel" name="phone"></label>
+        <label>Service Needed
+          <select name="service">
+            <option>Website Development</option>
+            <option>Software &amp; Digital Solutions</option>
+            <option>Computer Services</option>
+            <option>Networking Solutions</option>
+            <option>Cloud Computing</option>
+            <option>Graphic Design &amp; Printing</option>
+          </select>
+        </label>
+        <label>Message <textarea name="message" rows="5" required></textarea></label>
+        <button class="btn btn-primary" type="submit">Send Message</button>
+      </form>
+
+      <aside class="contact-info">
+        <h3>Contact Information</h3>
+        <p><strong>Phone:</strong> +234 906 122 2869</p>
+        <p><strong>Email:</strong> <a href="mailto:abkabsmartsolution@gmail.com">abkabsmartsolution@gmail.com</a></p>
+        <p><strong>WhatsApp:</strong> +234 906 122 2869</p>
+        <p><strong>Location:</strong> Kano State, Nigeria</p>
+        <a href="https://wa.me/2349061222869" target="_blank" rel="noopener" id="whatsappBtn" class="btn btn-outline"><i class="fab fa-whatsapp"></i> Chat With Us on WhatsApp</a>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="site-footer small">
+    <div class="container">
+      <div class="site-copy">© 2026 ABKAB Smart Solution. All Rights Reserved.</div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    window.EMAILJS_CONFIG = {
+      publicKey: 'YOUR_PUBLIC_KEY',
+      serviceId: 'YOUR_SERVICE_ID',
+      templateId: 'YOUR_TEMPLATE_ID',
+      toEmail: 'abdulwasiukura@gmail.com'
+    };
+  </script>
+  <script src="js/script.js"></script>
+</body>
+</html>

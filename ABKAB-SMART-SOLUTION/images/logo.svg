@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="500" viewBox="0 0 1400 500" role="img" aria-label="ABKAB Smart Solutions logo">
+  <defs>
+    <linearGradient id="redFade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF4B4B"/>
+      <stop offset="1" stop-color="#E31A1A"/>
+    </linearGradient>
+    <linearGradient id="blueFade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#123F9A"/>
+      <stop offset="1" stop-color="#0C2A76"/>
+    </linearGradient>
+  </defs>
+
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="900" letter-spacing="-10">
+    <text x="40" y="285" font-size="290" fill="url(#redFade)">A</text>
+    <text x="310" y="285" font-size="290" fill="url(#redFade)">B</text>
+    <text x="530" y="285" font-size="290" fill="url(#redFade)">K</text>
+    <text x="800" y="285" font-size="290" fill="url(#blueFade)">A</text>
+    <text x="1070" y="285" font-size="290" fill="url(#blueFade)">B</text>
+  </g>
+
+  <g>
+    <text x="700" y="404" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="110" fill="#0F2F7E" letter-spacing="3">SMART SOLUTIONS</text>
+  </g>
+</svg>

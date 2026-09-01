@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
+  <rect width="800" height="450" fill="#fff4f6"/>
+  <!-- logo mark -->
+  <circle cx="400" cy="150" r="72" fill="url(#g1)"/>
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0066ff"/><stop offset="1" stop-color="#ff2b2b"/>
+    </linearGradient>
+  </defs>
+  <text x="400" y="162" text-anchor="middle" fill="#fff" font-family="Poppins, Arial" font-size="34" font-weight="800">ABKAB</text>
+  <!-- brand name + tagline -->
+  <text x="400" y="262" text-anchor="middle" fill="#101828" font-family="Poppins, Arial" font-size="26" font-weight="700">Brand Identity</text>
+  <rect x="300" y="280" width="200" height="8" rx="4" fill="#ffc9d2"/>
+  <!-- stationery row -->
+  <rect x="180" y="330" width="110" height="64" rx="6" fill="#ffffff" stroke="#f3b6c2"/>
+  <rect x="345" y="330" width="110" height="64" rx="6" fill="#ffffff" stroke="#f3b6c2"/>
+  <rect x="510" y="330" width="110" height="64" rx="6" fill="#ffffff" stroke="#f3b6c2"/>
+  <rect x="196" y="352" width="50" height="8" rx="4" fill="#ff2b2b" opacity=".6"/>
+  <rect x="361" y="352" width="50" height="8" rx="4" fill="#ff2b2b" opacity=".6"/>
+  <rect x="526" y="352" width="50" height="8" rx="4" fill="#ff2b2b" opacity=".6"/>
+</svg>
