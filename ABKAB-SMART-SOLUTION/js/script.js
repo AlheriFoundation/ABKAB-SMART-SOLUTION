@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-  // Contact form - FormSubmit email delivery with validation and loading state.
+  // Contact form - native FormSubmit submission keeps its autoresponse feature enabled.
   var form = document.getElementById('contactForm');
   if(form){
     var status = document.getElementById('formStatus');
@@ -97,8 +97,6 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
     form.addEventListener('submit', function(e){
-      e.preventDefault();
-
       var nameField = form.querySelector('[name="name"]');
       var emailField = form.querySelector('[name="email"]');
       var phoneField = form.querySelector('[name="phone"]');
@@ -113,17 +111,20 @@ document.addEventListener('DOMContentLoaded', function(){
       var messageText = (messageField ? messageField.value : '').trim();
 
       if(!fullName || !emailAddress || !messageText){
+        e.preventDefault();
         setStatus('Please fill in your full name, email address, and message.', true);
         return;
       }
 
       var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if(!emailPattern.test(emailAddress)){
+        e.preventDefault();
         setStatus('Please enter a valid email address.', true);
         return;
       }
 
       if(phoneNumber && phoneNumber.replace(/[^0-9+]/g, '').length < 7){
+        e.preventDefault();
         setStatus('Please enter a valid phone number.', true);
         return;
       }
@@ -134,7 +135,9 @@ document.addEventListener('DOMContentLoaded', function(){
         btn.textContent = 'Sending...';
       }
       setStatus('Sending your message. Please wait...', false);
+      return;
 
+      /* FormSubmit autoresponses do not support AJAX submissions.
       var formData = new FormData();
       formData.append('Full Name', fullName);
       formData.append('Email Address', emailAddress);
@@ -166,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function(){
             btn.disabled = false;
             btn.textContent = originalText;
           }
-        });
+        }); */
     });
   }
 
