@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   });
 
-  // Contact form - EmailJS integration with validation, loading state, and clear messages
+  // Contact form - FormSubmit email delivery with validation and loading state.
   var form = document.getElementById('contactForm');
   if(form){
     var status = document.getElementById('formStatus');
@@ -128,12 +128,6 @@ document.addEventListener('DOMContentLoaded', function(){
         return;
       }
 
-      var config = window.EMAILJS_CONFIG || {};
-      if(!window.emailjs || !config.publicKey || !config.serviceId || !config.templateId || !config.toEmail){
-        setStatus('EmailJS is not configured yet. Add your Public Key, Service ID, Template ID, and destination email in the contact page script.', true);
-        return;
-      }
-
       var originalText = btn ? btn.textContent : 'Send Message';
       if(btn){
         btn.disabled = true;
@@ -141,19 +135,25 @@ document.addEventListener('DOMContentLoaded', function(){
       }
       setStatus('Sending your message. Please wait...', false);
 
-      window.emailjs.init({ publicKey: config.publicKey });
+      var formData = new FormData();
+      formData.append('Full Name', fullName);
+      formData.append('Email Address', emailAddress);
+      formData.append('Phone Number', phoneNumber || 'Not provided');
+      formData.append('Selected Service', serviceNeeded || 'Not specified');
+      formData.append('Project Description', messageText);
+      formData.append('_subject', 'New Request a Quote - ABKAB Smart Solution');
+      formData.append('_template', 'table');
+      formData.append('_captcha', 'false');
 
-      var templateParams = {
-        full_name: fullName,
-        email_address: emailAddress,
-        phone_number: phoneNumber || 'Not provided',
-        service_needed: serviceNeeded || 'Not specified',
-        message: messageText,
-        submission_date_time: new Date().toLocaleString(),
-        to_email: config.toEmail
-      };
-
-      window.emailjs.send(config.serviceId, config.templateId, templateParams)
+      fetch(form.action.replace('formsubmit.co/', 'formsubmit.co/ajax/'), {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: formData
+      })
+        .then(function(response){
+          if(!response.ok) throw new Error('Email delivery failed');
+          return response.json();
+        })
         .then(function(){
           setStatus('✅ Your message has been sent successfully. We will get back to you soon.', false);
           form.reset();
