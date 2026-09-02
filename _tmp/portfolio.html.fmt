@@ -1,0 +1,121 @@
+<!doctype html><html lang="en"><head><script async src="https://www.googletagmanager.com/gtag/js?id=G-LSYRQ91L4M"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-LSYRQ91L4M');</script>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Portfolio | ABKAB Smart Solution</title>
+<meta name="description" content="Explore completed and illustrative web, digital, creative, networking and printing work from ABKAB Smart Solution."><meta name="robots" content="index, follow, max-image-preview:large"><link rel="canonical" href="https://abkabsmartsolution.site/portfolio.html"><link rel="icon" href="images/logo.svg" type="image/svg+xml"><meta property="og:type" content="website"><meta property="og:url" content="https://abkabsmartsolution.site/portfolio.html"><meta property="og:title" content="ABKAB Smart Solution Portfolio"><meta property="og:description" content="Completed work and service disciplines across web, digital, creative and technology services."><meta property="og:image" content="https://abkabsmartsolution.site/images/logo.svg"><meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#0c2a76"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="css/style.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","url":"https://abkabsmartsolution.site/portfolio.html","name":"ABKAB Smart Solution Portfolio"}</script>
+</head>
+<body><a class="skip-link" href="#main-content">Skip to content</a>
+<header class="site-header"><div class="container nav-container"><a class="brand" href="/" aria-label="ABKAB Smart Solution home"><img class="brand-logo-image" src="images/logo.svg" alt="ABKAB Smart Solution"></a>
+<button class="nav-toggle" aria-controls="mainNav" aria-expanded="false" aria-label="Open navigation"><i class="fas fa-bars"></i>
+</button>
+<nav class="main-nav" id="mainNav" aria-label="Primary navigation"><ul><li><a href="/">Home</a>
+</li>
+<li><a href="about.html">About</a>
+</li>
+<li><a href="services.html">Services</a>
+</li>
+<li><a class="active" href="portfolio.html">Portfolio</a>
+</li>
+<li><a href="contact.html">Contact</a>
+</li>
+<li><a class="nav-cta" href="contact.html">Request a Quote</a>
+</li>
+</ul>
+</nav>
+</div>
+</header>
+<main id="main-content"><section class="page-hero"><div class="container"><div class="section-heading"><span class="eyebrow">Portfolio</span>
+<h1>Selected work and service capabilities.</h1>
+<p>ABKAB Smart Solution's completed website is featured first. The remaining cards are illustrative capability previews, not client projects or claims of completed work.</p>
+</div>
+</div>
+</section>
+<section class="section section-soft"><div class="container"><p class="portfolio-disclaimer"><strong>Transparency note:</strong>
+ The first card is a real completed ABKAB project. The remaining visuals represent service categories only and are not presented as real clients or case studies.</p>
+<div class="portfolio-filter" aria-label="Filter service categories"><button class="filter-btn active" type="button" data-filter="all">All categories</button>
+<button class="filter-btn" type="button" data-filter="web">Website Development</button>
+<button class="filter-btn" type="button" data-filter="digital">Software &amp; Digital</button>
+<button class="filter-btn" type="button" data-filter="creative">Creative &amp; Print</button>
+<button class="filter-btn" type="button" data-filter="network">Networking &amp; IT</button>
+</div>
+<div class="portfolio-full"><article class="project-card" data-category="web"><img src="images/portfolio/abkab-official-website-preview.svg" alt="Original browser-style preview representing the ABKAB Smart Solution official website"><div class="project-info"><span class="project-type">Website Development</span>
+<span class="project-status">Real Project</span>
+<h3>ABKAB Smart Solution Official Website</h3>
+<p>A modern, responsive corporate website designed and developed for ABKAB Smart Solution to showcase its technology, digital, creative, networking, cloud, and business support services. The website includes service pages, a professional portfolio, contact options, a Request a Quote system, WhatsApp integration, email notifications, customer auto-response, SEO setup, Google Analytics, and responsive user experience.</p>
+<p><strong>Tools:</strong>
+ HTML5, CSS3, JavaScript, GitHub, Vercel, Google Analytics, Google Search Console, FormSubmit.</p>
+<a class="btn btn-primary" style="margin-top:18px" href="https://www.abkabsmartsolution.site/" target="_blank" rel="noopener noreferrer">View Live Website <i class="fas fa-arrow-up-right-from-square"></i>
+</a>
+</div>
+</article>
+<article class="project-card" data-category="web"><img src="images/portfolio/project-website.svg" alt="Illustration representing website development"><div class="project-info"><span class="project-type">Website Development</span>
+<h3>Website service preview</h3>
+<p>Responsive business, portfolio, school and e-commerce website development.</p>
+<span class="placeholder-note">Illustrative service category &mdash; not a client project.</span>
+</div>
+</article>
+<article class="project-card" data-category="digital"><img src="images/portfolio/project-software.svg" alt="Illustration representing software and digital solutions"><div class="project-info"><span class="project-type">Software &amp; Digital</span>
+<h3>Digital systems preview</h3>
+<p>Custom digital tools, management systems and business workflow support.</p>
+<span class="placeholder-note">Illustrative service category &mdash; not a client project.</span>
+</div>
+</article>
+<article class="project-card" data-category="creative"><img src="images/portfolio/project-brand.svg" alt="Illustration representing graphic design and branding"><div class="project-info"><span class="project-type">Graphic Design &amp; Branding</span>
+<h3>Brand identity preview</h3>
+<p>Business identity, flyers, cards and marketing design support.</p>
+<span class="placeholder-note">Illustrative service category &mdash; not a client project.</span>
+</div>
+</article>
+<article class="project-card" data-category="network"><img src="images/portfolio/project-network.svg" alt="Illustration representing networking and IT solutions"><div class="project-info"><span class="project-type">Networking &amp; IT</span>
+<h3>Connectivity preview</h3>
+<p>Network setup, Wi-Fi configuration, troubleshooting and support.</p>
+<span class="placeholder-note">Illustrative service category &mdash; not a client project.</span>
+</div>
+</article>
+<article class="project-card" data-category="creative"><img src="images/portfolio/project-printing.svg" alt="Illustration representing printing and creative services"><div class="project-info"><span class="project-type">Printing &amp; Creative</span>
+<h3>Print support preview</h3>
+<p>Posters, banners, document design, printing and scanning services.</p>
+<span class="placeholder-note">Illustrative service category &mdash; not a client project.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+</main>
+<section class="cta-band"><div class="container"><div><h2>Want to discuss your own project?</h2>
+<p>Share what you need and we will help you define the next step.</p>
+</div>
+<a class="btn btn-light" href="contact.html">Request a Quote</a>
+</div>
+</section>
+<footer class="site-footer"><div class="container footer-grid"><div class="footer-brand"><img class="footer-logo" src="images/logo.svg" alt="ABKAB Smart Solution"><p>Technology, digital solutions and creative support in Kano, Nigeria.</p>
+</div>
+<div><h3>Explore</h3>
+<ul class="footer-links"><li><a href="about.html">About ABKAB</a>
+</li>
+<li><a href="services.html">Our Services</a>
+</li>
+<li><a href="portfolio.html">Portfolio</a>
+</li>
+<li><a href="contact.html">Request a Quote</a>
+</li>
+</ul>
+</div>
+<div><h3>Contact</h3>
+<div class="footer-contact"><a href="tel:+2349061222869"><i class="fas fa-phone"></i>
+ +234 906 122 2869</a>
+<a href="mailto:abkabsmartsolution@gmail.com"><i class="fas fa-envelope"></i>
+ Email ABKAB</a>
+<a href="https://wa.me/2349061222869" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i>
+ Chat on WhatsApp</a>
+</div>
+</div>
+</div>
+<div class="container site-copy">&copy; 2026 ABKAB Smart Solution. All rights reserved.</div>
+</footer>
+<a class="whatsapp-float" href="https://wa.me/2349061222869" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="fab fa-whatsapp"></i>
+</a>
+<script src="js/script.js"></script>
+</body>
+</html>
+
+
