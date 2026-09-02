@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://abkabsmartsolution.site/sitemap.xml
+Sitemap: https://www.abkabsmartsolution.site/sitemap.xml

@@ -1,0 +1,23 @@
+# Redirect /index.html to the clean homepage URL (301 permanent, avoids duplicate content)
+# Works on most shared hosting (cPanel/Apache). If the site uses Netlify, use _redirects instead.
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Only redirect the exact file request, not the directory root
+  RewriteCond %{THE_REQUEST} \s/+index\.html[\s?/] [NC]
+  RewriteRule ^index\.html$ / [R=301,L]
+</IfModule>
+
+# Force www (keeps canonical consistent with https://www.abkabsmartsolution.site/)
+<IfModule mod_rewrite.c>
+  RewriteCond %{HTTP_HOST} ^abkabsmartsolution\.site$ [NC]
+  RewriteRule ^(.*)$ https://www.abkabsmartsolution.site/$1 [R=301,L]
+</IfModule>
+
+# Basic security/perf headers
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+</IfModule>
+
+# Serve SVG with correct mime type (usually default, but safe)
+AddType image/svg+xml .svg

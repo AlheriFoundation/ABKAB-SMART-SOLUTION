@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="ABKAB Smart Solution - Technology and Digital Solutions">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#123F9A"/>
+      <stop offset="1" stop-color="#0C2A76"/>
+    </linearGradient>
+    <linearGradient id="redFade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF4B4B"/>
+      <stop offset="1" stop-color="#E31A1A"/>
+    </linearGradient>
+    <linearGradient id="blueFade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4D74D9"/>
+      <stop offset="1" stop-color="#2B4FB5"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1080" cy="90" r="220" fill="#ffffff" opacity="0.04"/>
+  <circle cx="90" cy="580" r="180" fill="#ffffff" opacity="0.04"/>
+
+  <!-- Wordmark recreated exactly in the style of the official logo (red A-B-K / blue A-B) -->
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="900" letter-spacing="-4" text-anchor="middle">
+    <text x="600" y="300" font-size="170">
+      <tspan fill="url(#redFade)">ABK</tspan><tspan fill="url(#blueFade)">AB</tspan>
+    </text>
+  </g>
+  <text x="600" y="368" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="62" fill="#FFFFFF" letter-spacing="6">SMART SOLUTION</text>
+
+  <line x1="420" y1="418" x2="780" y2="418" stroke="#E31A1A" stroke-width="4"/>
+
+  <text x="600" y="486" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="500" font-size="40" fill="#D7E0F5" letter-spacing="2">Technology &amp; Digital Solutions</text>
+  <text x="600" y="556" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="400" font-size="30" fill="#8FA3D8">www.abkabsmartsolution.site</text>
+</svg>

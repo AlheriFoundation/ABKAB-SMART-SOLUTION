@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="ABKAB">
+  <!-- Simplified icon mark derived from the official ABKAB logo: "A" in the red gradient, "B" in the blue gradient -->
+  <defs>
+    <linearGradient id="redFade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF4B4B"/>
+      <stop offset="1" stop-color="#E31A1A"/>
+    </linearGradient>
+    <linearGradient id="blueFade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#123F9A"/>
+      <stop offset="1" stop-color="#0C2A76"/>
+    </linearGradient>
+  </defs>
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="900">
+    <text x="20" y="360" font-size="340" fill="url(#redFade)">A</text>
+    <text x="250" y="360" font-size="340" fill="url(#blueFade)">B</text>
+  </g>
+</svg>
