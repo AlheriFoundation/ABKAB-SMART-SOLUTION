@@ -123,44 +123,36 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  var contactForms = document.querySelectorAll('#contactForm, #homeQuoteForm');
   var contactForm = document.getElementById('contactForm');
   var contactStatus = document.getElementById('formStatus');
-  var homeQuoteStatus = document.getElementById('homeQuoteStatus');
-  var sentStatus = contactStatus || homeQuoteStatus;
-  if (params.get('sent') === '1' && sentStatus) {
-    sentStatus.textContent = 'Thank you - your request has been sent. We will review it and respond as soon as possible.';
-    sentStatus.className = 'form-status success';
-    history.replaceState({}, '', window.location.pathname + (homeQuoteStatus ? '#quote' : ''));
+  if (params.get('sent') === '1' && contactStatus) {
+    contactStatus.textContent = 'Thank you - your request has been sent. We will review it and respond as soon as possible.';
+    contactStatus.className = 'form-status success';
+    history.replaceState({}, '', window.location.pathname);
   }
-  contactForms.forEach(function (form) {
-    var status = form.querySelector('.form-status');
-    form.addEventListener('submit', function (event) {
-      if (!form.checkValidity()) {
+  if (contactForm) {
+    contactForm.addEventListener('submit', function (event) {
+      if (!contactForm.checkValidity()) {
         event.preventDefault();
-        if (status) {
-          status.textContent = 'Please complete the required fields before sending your request.';
-          status.className = 'form-status error';
-        }
-        form.reportValidity();
+        contactStatus.textContent = 'Please complete the required fields before sending your request.';
+        contactStatus.className = 'form-status error';
+        contactForm.reportValidity();
         return;
       }
-      var button = form.querySelector('[type="submit"]');
-      if (form.dataset.submitting === 'true') {
+      var button = contactForm.querySelector('[type="submit"]');
+      if (contactForm.dataset.submitting === 'true') {
         event.preventDefault();
         return;
       }
-      form.dataset.submitting = 'true';
+      contactForm.dataset.submitting = 'true';
       if (button) {
         button.disabled = true;
         button.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Sending...';
       }
-      if (status) {
-        status.textContent = 'Sending your request securely...';
-        status.className = 'form-status';
-      }
+      contactStatus.textContent = 'Sending your request securely...';
+      contactStatus.className = 'form-status';
     });
-  });
+  }
 
   var cacForm = document.getElementById('cacForm');
   var cacStatus = document.getElementById('cacStatus');
