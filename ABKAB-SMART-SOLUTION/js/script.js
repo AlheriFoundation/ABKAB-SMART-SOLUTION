@@ -123,36 +123,44 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
+  var contactForms = document.querySelectorAll('#contactForm, #homeQuoteForm');
   var contactForm = document.getElementById('contactForm');
   var contactStatus = document.getElementById('formStatus');
-  if (params.get('sent') === '1' && contactStatus) {
-    contactStatus.textContent = 'Thank you - your request has been sent. We will review it and respond as soon as possible.';
-    contactStatus.className = 'form-status success';
-    history.replaceState({}, '', window.location.pathname);
+  var homeQuoteStatus = document.getElementById('homeQuoteStatus');
+  var sentStatus = contactStatus || homeQuoteStatus;
+  if (params.get('sent') === '1' && sentStatus) {
+    sentStatus.textContent = 'Thank you - your request has been sent. We will review it and respond as soon as possible.';
+    sentStatus.className = 'form-status success';
+    history.replaceState({}, '', window.location.pathname + (homeQuoteStatus ? '#quote' : ''));
   }
-  if (contactForm) {
-    contactForm.addEventListener('submit', function (event) {
-      if (!contactForm.checkValidity()) {
+  contactForms.forEach(function (form) {
+    var status = form.querySelector('.form-status');
+    form.addEventListener('submit', function (event) {
+      if (!form.checkValidity()) {
         event.preventDefault();
-        contactStatus.textContent = 'Please complete the required fields before sending your request.';
-        contactStatus.className = 'form-status error';
-        contactForm.reportValidity();
+        if (status) {
+          status.textContent = 'Please complete the required fields before sending your request.';
+          status.className = 'form-status error';
+        }
+        form.reportValidity();
         return;
       }
-      var button = contactForm.querySelector('[type="submit"]');
-      if (contactForm.dataset.submitting === 'true') {
+      var button = form.querySelector('[type="submit"]');
+      if (form.dataset.submitting === 'true') {
         event.preventDefault();
         return;
       }
-      contactForm.dataset.submitting = 'true';
+      form.dataset.submitting = 'true';
       if (button) {
         button.disabled = true;
         button.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Sending...';
       }
-      contactStatus.textContent = 'Sending your request securely...';
-      contactStatus.className = 'form-status';
+      if (status) {
+        status.textContent = 'Sending your request securely...';
+        status.className = 'form-status';
+      }
     });
-  }
+  });
 
   var cacForm = document.getElementById('cacForm');
   var cacStatus = document.getElementById('cacStatus');
@@ -186,18 +194,22 @@ document.addEventListener('DOMContentLoaded', function () {
         ['cacName', 'Please enter your full name.'],
         ['cacPhone', 'Please enter a valid phone number.'],
         ['cacEmail', 'Please enter a valid email address.'],
-        ['cacType', 'Please select CAC Business Name.'],
+        ['residentialAddress', 'Please enter your residential address.'],
+        ['cacType', 'Please select BN - Business Name Registration.'],
         ['nameOne', 'Please enter the first proposed business name.'],
         ['nameTwo', 'Please enter the second proposed business name.'],
         ['nameThree', 'Please enter the third proposed business name.'],
         ['nature', 'Please describe the nature of business.'],
         ['businessAddress', 'Please enter the business address.'],
-        ['state', 'Please select a state.'],
-        ['lga', 'Please enter the LGA.']
+        ['businessState', 'Please select the business state.'],
+        ['businessLga', 'Please enter the business LGA.'],
+        ['ninNumber', 'Please enter your 11-digit NIN number.'],
+        ['dateOfBirth', 'Please enter your date of birth.'],
+        ['gender', 'Please select your gender.']
       ].forEach(function (item) {
         var el = document.getElementById(item[0]);
         if (!el) return;
-        var bad = !el.value.trim() || (el.id === 'cacPhone' && !validPhone(el.value)) || (el.type === 'email' && !el.validity.valid);
+        var bad = !el.value.trim() || (el.id === 'cacPhone' && !validPhone(el.value)) || (el.id === 'ninNumber' && !/^\d{11}$/.test(el.value.trim())) || (el.type === 'email' && !el.validity.valid);
         setError(el, bad ? item[1] : '');
         if (bad) ok = false;
       });
@@ -218,13 +230,17 @@ document.addEventListener('DOMContentLoaded', function () {
         'Name: ' + value('cacName'),
         'Phone: ' + value('cacPhone'),
         'Email: ' + value('cacEmail'),
-        'CAC Type: BN - Business Name',
+        'CAC Service: BN - Business Name Registration',
+        'Residential Address: ' + value('residentialAddress'),
         'Proposed Name 1: ' + value('nameOne'),
         'Proposed Name 2: ' + value('nameTwo'),
         'Proposed Name 3: ' + value('nameThree'),
         'Nature of Business: ' + value('nature'),
-        'State: ' + value('state'),
-        'LGA: ' + value('lga'),
+        'Business State: ' + value('businessState'),
+        'Business LGA: ' + value('businessLga'),
+        'NIN Number: [submitted as a private document field]',
+        'Date of Birth: ' + value('dateOfBirth'),
+        'Gender: ' + value('gender'),
         'Additional Notes: ' + (value('notes') || 'None'),
         'I have submitted my CAC registration request through the ABKAB Smart Solution website.'
       ].join('\n');
