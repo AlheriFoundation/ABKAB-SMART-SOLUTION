@@ -144,13 +144,28 @@ document.addEventListener('DOMContentLoaded', function () {
         event.preventDefault();
         return;
       }
+      event.preventDefault();
       contactForm.dataset.submitting = 'true';
       if (button) {
         button.disabled = true;
         button.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Sending...';
       }
-      contactStatus.textContent = 'Sending your request securely...';
+      contactStatus.textContent = 'Saving your request securely...';
       contactStatus.className = 'form-status';
+      postJson('/api/submit-request', {
+        serviceType: value('service'), customerName: value('name'), phone: value('phone'), email: value('email'),
+        preferredContactMethod: value('contactMethod'), location: value('location'),
+        requestDetails: { budget: value('budget'), message: value('message') }
+      }).then(function (data) {
+        contactStatus.textContent = 'Thank you. Your request ID is ' + data.requestId + '. We will review it and respond soon.';
+        contactStatus.className = 'form-status success';
+        sendEvent('contact_request_submitted', { request_id: data.requestId });
+      }).catch(function (error) {
+        contactForm.dataset.submitting = 'false';
+        if (button) { button.disabled = false; button.innerHTML = 'Send Request <i class="fas fa-arrow-right"></i>'; }
+        contactStatus.textContent = error.message;
+        contactStatus.className = 'form-status error';
+      });
     });
   }
 
@@ -427,6 +442,15 @@ document.addEventListener('DOMContentLoaded', function () {
     return el.value.trim();
   }
 
+  function postJson(url, payload) {
+    return fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) }).then(function (response) {
+      return response.json().catch(function () { return {}; }).then(function (data) {
+        if (!response.ok) throw new Error(data.error || 'Request failed.');
+        return data;
+      });
+    });
+  }
+
   function setupRequestForm() {
     if (!requestForm || !serviceFields) return;
     var requestedKey = params.get('service') || 'website';
@@ -512,16 +536,19 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      var ref = generateReference();
-      document.getElementById('requestReferenceField').value = ref;
-      document.getElementById('requestNext').value = SITE_URL + 'request.html?sent=1&service=' + encodeURIComponent(key) + '&ref=' + encodeURIComponent(ref);
+      if (requestForm.querySelector('input[type="file"]:valid')) {
+        event.preventDefault();
+        requestStatus.textContent = 'File uploads are not enabled for this request system yet. Please submit without an attachment or contact ABKAB directly.';
+        requestStatus.className = 'form-status error';
+        return;
+      }
 
       var lines = [
         'ABKAB SMART SOLUTION',
         'Service Request',
         '',
         'Service: ' + config.serviceName,
-        'Reference: ' + ref,
+        'Request submitted through the ABKAB Smart Solution website.',
         '',
         'Name: ' + requestValue('requestName'),
         'Phone: ' + requestValue('requestPhone'),
@@ -541,13 +568,32 @@ document.addEventListener('DOMContentLoaded', function () {
         requestWhatsappLink.href = WHATSAPP_URL + '?text=' + encodeURIComponent(lines.join('\n'));
         sessionStorage.setItem('abkabRequestWhatsApp', requestWhatsappLink.href);
       }
-      sessionStorage.setItem('abkabRequestReference', ref);
+      event.preventDefault();
       requestForm.dataset.submitting = 'true';
       requestSubmit.disabled = true;
       requestSubmit.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Submitting...';
-      requestStatus.textContent = 'Submitting your request securely...';
+      requestStatus.textContent = 'Saving your request securely...';
       requestStatus.className = 'form-status';
-      sendEvent('service_request_submitted', { service: key });
+      var details = {};
+      config.fields.forEach(function (field) { details[field.name] = field.type === 'checkboxes' ? selectedCheckboxes(field.id) : requestValue(field.id); });
+      details['Additional Notes'] = requestValue('requestNotes');
+      postJson('/api/submit-request', {
+        serviceType: config.serviceName, customerName: requestValue('requestName'), phone: requestValue('requestPhone'),
+        email: requestValue('requestEmail'), preferredContactMethod: requestValue('contactMethod'), location: requestValue('requestLocation'), requestDetails: details
+      }).then(function (data) {
+        if (requestReferenceNote) requestReferenceNote.textContent = 'Request ID: ' + data.requestId;
+        if (requestWhatsappLink) requestWhatsappLink.href = WHATSAPP_URL + '?text=' + encodeURIComponent(lines.join('\n').replace('Request submitted through the ABKAB Smart Solution website.', 'Request ID: ' + data.requestId));
+        requestForm.closest('.section').hidden = true;
+        requestSuccess.hidden = false;
+        requestSuccess.scrollIntoView({ block: 'start' });
+        sendEvent('service_request_submitted', { service: key, request_id: data.requestId });
+      }).catch(function (error) {
+        requestForm.dataset.submitting = 'false';
+        requestSubmit.disabled = false;
+        requestSubmit.innerHTML = esc(config.cta) + ' <i class="fas fa-arrow-right"></i>';
+        requestStatus.textContent = error.message;
+        requestStatus.className = 'form-status error';
+      });
     });
 
     if (requestWhatsappLink) requestWhatsappLink.addEventListener('click', function () {
