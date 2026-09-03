@@ -34,7 +34,7 @@ async function supabase(path, options) {
 }
 async function requireAdmin(req) { const match = (req.headers.cookie || '').match(/(?:^|;\s*)abkab_admin=([^;]+)/); if (!match) return null; const response = await fetch(`${env('SUPABASE_URL')}/auth/v1/user`, { headers: { apikey: env('SUPABASE_ANON_KEY'), Authorization: `Bearer ${decodeURIComponent(match[1])}` } }); if (!response.ok) return null; const user = await response.json(); return user && user.email && user.email.toLowerCase() === env('ADMIN_EMAIL').toLowerCase() ? user : null; }
 function sessionCookie(token, maxAge) { return `abkab_admin=${encodeURIComponent(token)}; Max-Age=${maxAge}; Path=/; HttpOnly; Secure; SameSite=Lax`; }
-function requestId() { return `ABKAB-${new Date().getUTCFullYear()}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`; }
+function requestId() { return `ABKAB-${new Date().getUTCFullYear()}-${String(crypto.randomInt(0, 1000000)).padStart(6, '0')}`; }
 function normalizeStatus(status) {
 	const value = String(status || '').trim().toUpperCase();
 	if (!value || value === 'NEW') return 'PENDING';

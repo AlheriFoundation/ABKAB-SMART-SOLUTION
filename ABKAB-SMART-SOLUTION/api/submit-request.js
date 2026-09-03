@@ -1,4 +1,4 @@
-const { sendJson, body, supabase, normalizeStatus } = require('../lib/request-backend');
+const { sendJson, body, requestId, supabase, normalizeStatus } = require('../lib/request-backend');
 
 function text(value, maxLength) {
   return String(value == null ? '' : value).trim().slice(0, maxLength || 5000);
@@ -73,16 +73,7 @@ module.exports = async function handler(req, res) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) return sendJson(res, 400, { error: 'Please enter a valid email address.' });
     if (!/^\+?[0-9\s().-]{7,25}$/.test(payload.phone)) return sendJson(res, 400, { error: 'Please enter a valid phone number.' });
 
-    const trackingNumber = await supabase('rpc/generate_tracking_number', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({}),
-      operation: 'generate tracking number'
-    });
-    if (!trackingNumber || typeof trackingNumber !== 'string') return sendJson(res, 500, { error: 'Tracking number generation failed.' });
-
     const record = {
-      request_id: trackingNumber,
       service_type: payload.serviceRequested,
       service_category: payload.serviceCategory || payload.serviceRequested,
       customer_name: payload.customerName,
@@ -100,12 +91,21 @@ module.exports = async function handler(req, res) {
       customer_note: ''
     };
 
-    const saved = await supabase('requests?select=*', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', Prefer: 'return=representation' },
-      body: JSON.stringify(record),
-      operation: 'save request'
-    });
+    let saved;
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      record.request_id = requestId();
+      try {
+        saved = await supabase('requests?select=*', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', Prefer: 'return=representation' },
+          body: JSON.stringify(record),
+          operation: 'save request'
+        });
+        break;
+      } catch (error) {
+        if (error.code !== '23505' || attempt === 2) throw error;
+      }
+    }
     const row = Array.isArray(saved) ? saved[0] : null;
     if (!row) return sendJson(res, 500, { error: 'We could not save your request. Please try again.' });
 

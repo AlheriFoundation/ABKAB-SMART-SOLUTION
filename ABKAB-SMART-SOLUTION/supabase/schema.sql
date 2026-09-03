@@ -1,19 +1,5 @@
 create extension if not exists pgcrypto;
 
-create sequence if not exists public.request_tracking_sequence;
-
-create or replace function public.generate_tracking_number()
-returns text
-language plpgsql
-as $$
-declare
-  sequence_value bigint;
-begin
-  sequence_value := nextval('public.request_tracking_sequence');
-  return 'ABKAB-' || to_char(timezone('UTC', now()), 'YYYY') || '-' || lpad(sequence_value::text, 6, '0');
-end;
-$$;
-
 create table if not exists public.requests (
   id uuid primary key default gen_random_uuid(),
   request_id text not null unique check (request_id ~ '^ABKAB-[0-9]{4}-[0-9]{6}$'),
@@ -54,10 +40,7 @@ create index if not exists requests_status_idx on public.requests (status);
 create index if not exists requests_created_at_idx on public.requests (created_at desc);
 alter table public.requests enable row level security;
 revoke all on public.requests from anon, authenticated;
-revoke all on function public.generate_tracking_number() from public;
-grant execute on function public.generate_tracking_number() to service_role;
-
--- Keep an existing deployment aligned with the decimal sequence format above.
+-- Keep existing deployments aligned with the server-generated ID format.
 alter table public.requests drop constraint if exists requests_request_id_check;
 alter table public.requests add constraint requests_request_id_check check (request_id ~ '^ABKAB-[0-9]{4}-[0-9]{6}$');
 alter table public.requests drop constraint if exists requests_status_check;
