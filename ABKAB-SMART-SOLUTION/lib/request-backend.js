@@ -1,9 +1,32 @@
 const crypto = require('crypto');
 
-function env(name) { if (!process.env[name]) throw new Error(`Missing required environment variable: ${name}`); return process.env[name]; }
+function env(name) {
+	if (!process.env[name]) {
+		const error = new Error(`Server configuration error: missing ${name}`);
+		error.code = 'CONFIGURATION_ERROR';
+		throw error;
+	}
+	return process.env[name];
+}
 function sendJson(res, status, body, headers) { res.status(status); if (headers) Object.entries(headers).forEach(([name, value]) => res.setHeader(name, value)); return res.json(body); }
 function supabaseHeaders(extra) { return { apikey: env('SUPABASE_SERVICE_ROLE_KEY'), Authorization: `Bearer ${env('SUPABASE_SERVICE_ROLE_KEY')}`, ...(extra || {}) }; }
-async function supabase(path, options) { const response = await fetch(`${env('SUPABASE_URL')}/rest/v1/${path}`, { ...options, headers: supabaseHeaders(options && options.headers) }); const text = await response.text(); let data; try { data = text ? JSON.parse(text) : null; } catch (_) { data = { error: text }; } if (!response.ok) throw new Error(data && (data.message || data.error) || 'Database request failed'); return data; }
+async function supabase(path, options) {
+	const operation = options && options.operation || 'Supabase request';
+	const response = await fetch(`${env('SUPABASE_URL')}/rest/v1/${path}`, { ...options, headers: supabaseHeaders(options && options.headers) });
+	const text = await response.text();
+	let data;
+	try { data = text ? JSON.parse(text) : null; } catch (_) { data = { error: text }; }
+	if (!response.ok) {
+		const message = data && (data.message || data.error || data.details || data.hint) || `Supabase returned HTTP ${response.status}`;
+		const error = new Error(message);
+		error.operation = operation;
+		error.status = response.status;
+		error.responseBody = text;
+		error.code = data && data.code;
+		throw error;
+	}
+	return data;
+}
 async function requireAdmin(req) { const match = (req.headers.cookie || '').match(/(?:^|;\s*)abkab_admin=([^;]+)/); if (!match) return null; const response = await fetch(`${env('SUPABASE_URL')}/auth/v1/user`, { headers: { apikey: env('SUPABASE_ANON_KEY'), Authorization: `Bearer ${decodeURIComponent(match[1])}` } }); if (!response.ok) return null; const user = await response.json(); return user && user.email && user.email.toLowerCase() === env('ADMIN_EMAIL').toLowerCase() ? user : null; }
 function sessionCookie(token, maxAge) { return `abkab_admin=${encodeURIComponent(token)}; Max-Age=${maxAge}; Path=/; HttpOnly; Secure; SameSite=Lax`; }
 function requestId() { return `ABKAB-${new Date().getUTCFullYear()}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`; }
