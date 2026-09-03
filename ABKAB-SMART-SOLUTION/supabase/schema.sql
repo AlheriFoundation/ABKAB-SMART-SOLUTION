@@ -36,6 +36,17 @@ create table if not exists public.requests (
   customer_note text not null default ''
 );
 
+-- Upgrade installations that already have the original requests table.
+alter table public.requests add column if not exists service_category text not null default '';
+alter table public.requests add column if not exists description text not null default '';
+alter table public.requests add column if not exists address text not null default '';
+alter table public.requests add column if not exists state text not null default '';
+alter table public.requests add column if not exists lga text not null default '';
+alter table public.requests add column if not exists request_details jsonb not null default '{}'::jsonb;
+alter table public.requests add column if not exists updated_at timestamptz not null default now();
+alter table public.requests add column if not exists admin_notes text not null default '';
+alter table public.requests add column if not exists customer_note text not null default '';
+
 create index if not exists requests_tracking_idx on public.requests (request_id, email);
 create index if not exists requests_customer_name_idx on public.requests (customer_name);
 create index if not exists requests_phone_idx on public.requests (phone);
@@ -49,3 +60,5 @@ grant execute on function public.generate_tracking_number() to service_role;
 -- Keep an existing deployment aligned with the decimal sequence format above.
 alter table public.requests drop constraint if exists requests_request_id_check;
 alter table public.requests add constraint requests_request_id_check check (request_id ~ '^ABKAB-[0-9]{4}-[0-9]{6}$');
+alter table public.requests drop constraint if exists requests_status_check;
+alter table public.requests add constraint requests_status_check check (status in ('PENDING','UNDER_REVIEW','PROCESSING','APPROVED','COMPLETED','REJECTED','CANCELLED','NEW','IN_PROGRESS','WAITING_FOR_CUSTOMER'));

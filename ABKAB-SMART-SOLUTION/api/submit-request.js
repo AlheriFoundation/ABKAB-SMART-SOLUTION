@@ -135,6 +135,7 @@ module.exports = async function handler(req, res) {
   } catch (error) {
     console.error(error);
     if (error.code === '23514' || /request_id|check constraint/i.test(error.message || '')) return sendJson(res, 503, { error: 'The request system needs its database migration applied before submissions can be saved.' });
+    if (error.code === '42703' || error.code === '42P01' || /column .* does not exist|relation .* does not exist/i.test(error.message || '')) return sendJson(res, 503, { error: 'The requests table is not ready. Please apply the Supabase database schema before submitting.' });
     return sendJson(res, 500, { error: 'We could not save your request. Please try again.' });
   }
 };
