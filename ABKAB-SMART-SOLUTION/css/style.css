@@ -70,6 +70,7 @@
 @media(max-width:560px){.section{padding:56px 0}.page-hero{padding:54px 0 38px}.contact-layout{gap:26px}.contact-form{padding:20px}.hero-actions{gap:10px}.btn{width:100%;min-height:46px}}
 
 .request-timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:30px;padding-top:20px;border-top:1px solid var(--line)}.request-timeline div{display:grid;gap:8px;color:var(--text-muted);font-size:.72rem;font-weight:800;text-align:center}.request-timeline span{display:grid;place-items:center;width:30px;height:30px;margin:auto;border:1px solid var(--line);border-radius:50%;background:var(--surface);color:var(--text-muted)}.request-timeline .is-active{color:var(--primary)}.request-timeline .is-active span{border-color:var(--primary);background:var(--primary);color:#fff}.request-timeline .is-current strong{color:var(--ink)}.customer-notes{display:grid;gap:3px;margin-top:24px;padding-top:18px;border-top:1px solid var(--line);font-size:.82rem}.customer-notes strong{color:var(--ink)}
+.tracking-card-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}.tracking-card-actions .form-status{flex-basis:100%;margin:0}.tracking-card-actions canvas{display:none}
 .track-prompt{margin-top:12px;color:var(--text-muted);font-size:.88rem;font-weight:700}
 @media(max-width:560px){.request-timeline{gap:4px}.request-timeline div{font-size:.65rem}}
 
