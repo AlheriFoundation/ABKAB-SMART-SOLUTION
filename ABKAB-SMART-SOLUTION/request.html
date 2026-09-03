@@ -114,6 +114,18 @@
                 <label for="requestLocation">Location</label>
                 <input id="requestLocation" name="Location" type="text" autocomplete="address-level2" placeholder="City, state or area">
               </div>
+              <div class="field">
+                <label for="requestAddress">Address</label>
+                <input id="requestAddress" name="Address" type="text" autocomplete="street-address" placeholder="Street address or business address">
+              </div>
+              <div class="field">
+                <label for="requestState">State</label>
+                <input id="requestState" name="State" type="text" autocomplete="address-level1" placeholder="State">
+              </div>
+              <div class="field full">
+                <label for="requestLga">LGA</label>
+                <input id="requestLga" name="LGA" type="text" autocomplete="address-level2" placeholder="Local Government Area">
+              </div>
             </div>
           </fieldset>
 
@@ -164,12 +176,18 @@
         <div class="success-panel">
           <i class="fas fa-circle-check"></i>
           <h2>Request Submitted Successfully</h2>
-          <p>Thank you for choosing ABKAB Smart Solution. We have received your request and our team will contact you.</p>
-          <p id="requestReferenceNote" class="request-reference"></p>
+          <p id="requestSuccessMessage">Thank you for choosing ABKAB Smart Solution. We have received your request and our team will contact you.</p>
+          <dl class="success-summary">
+            <div><dt>Tracking Number</dt><dd id="successTrackingNumber"></dd></div>
+            <div><dt>Customer Name</dt><dd id="successCustomerName"></dd></div>
+            <div><dt>Service</dt><dd id="successServiceName"></dd></div>
+            <div><dt>Status</dt><dd id="successRequestStatus"></dd></div>
+            <div><dt>Submission Date</dt><dd id="successSubmissionDate"></dd></div>
+          </dl>
           <div class="tracking-card-actions">
-            <button id="downloadTrackingCard" class="btn btn-primary" type="button">Download Tracking Card <i class="fas fa-download"></i></button>
-            <button id="saveTrackingImage" class="btn btn-secondary" type="button">Save as Image <i class="fas fa-image"></i></button>
-            <button id="shareSubmittedCard" class="btn btn-secondary" type="button" hidden>Share <i class="fas fa-share-nodes"></i></button>
+            <button id="copyTrackingNumber" class="btn btn-secondary" type="button">Copy Tracking Number <i class="fas fa-copy"></i></button>
+            <button id="downloadTrackingSlip" class="btn btn-primary" type="button">Download Tracking Slip <i class="fas fa-download"></i></button>
+            <a id="trackRequestLink" class="btn btn-secondary" href="track-request.html">Track Request <i class="fas fa-magnifying-glass"></i></a>
             <p id="submissionCardStatus" class="form-status" role="status" aria-live="polite"></p>
           </div>
           <div class="hero-actions">
@@ -210,6 +228,7 @@
   </footer>
 
   <a class="whatsapp-float" href="https://wa.me/2349061222869" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><i class="fab fa-whatsapp"></i></a>
+  <script src="js/tracking-slip.js"></script>
   <script src="js/script.js"></script>
 </body>
 </html>

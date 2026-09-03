@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
       contactStatus.className = 'form-status';
       postJson('/api/submit-request', {
         serviceType: value('service'), customerName: value('name'), phone: value('phone'), email: value('email'),
-        preferredContactMethod: value('contactMethod'), location: value('location'),
+        preferredContactMethod: value('contactMethod'), location: value('location'), address: value('address'), state: value('state'), lga: value('lga'),
         requestDetails: { budget: value('budget'), message: value('message') }
       }).then(function (data) {
         contactStatus.textContent = 'Thank you. Your request ID is ' + data.requestId + '. We will review it and respond soon.';
@@ -454,7 +454,12 @@ document.addEventListener('DOMContentLoaded', function () {
   function collectFormDetails(form) {
     var details = {};
     Array.prototype.forEach.call(form.elements, function (el) {
-      if (!el.name || el.type === 'file' || el.name.charAt(0) === '_') return;
+      if (!el.name || el.name.charAt(0) === '_') return;
+      if (el.type === 'file') {
+        var file = el.files && el.files[0];
+        if (file) details[el.id + ' File'] = file.name + ' (' + file.type + ', ' + file.size + ' bytes)';
+        return;
+      }
       if (el.type === 'checkbox') {
         if (!el.checked) return;
         details[el.name] = details[el.name] ? details[el.name] + ', ' + el.value : el.value;
@@ -582,13 +587,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      if (requestForm.querySelector('input[type="file"]:valid')) {
-        event.preventDefault();
-        requestStatus.textContent = 'File uploads are not enabled for this request system yet. Please submit without an attachment or contact ABKAB directly.';
-        requestStatus.className = 'form-status error';
-        return;
-      }
-
       var lines = [
         'ABKAB SMART SOLUTION',
         'Service Request',
@@ -623,10 +621,30 @@ document.addEventListener('DOMContentLoaded', function () {
       var details = collectFormDetails(requestForm);
       postJson('/api/submit-request', {
         serviceType: config.serviceName, customerName: requestValue('requestName'), phone: requestValue('requestPhone'),
-        email: requestValue('requestEmail'), preferredContactMethod: requestValue('contactMethod'), location: requestValue('requestLocation'), requestDetails: details
+        email: requestValue('requestEmail'), preferredContactMethod: requestValue('contactMethod'), location: requestValue('requestLocation'), address: requestValue('requestAddress'), state: requestValue('requestState'), lga: requestValue('requestLga'), requestDetails: details
       }).then(function (data) {
-        if (requestReferenceNote) requestReferenceNote.textContent = 'Your Tracking Number: ' + data.requestId;
-        prepareTrackingCardActions({ requestId: data.requestId, serviceType: data.serviceType || config.serviceName, status: data.status, createdAt: data.createdAt, updatedAt: data.updatedAt });
+        var tracking = {
+          trackingNumber: data.trackingNumber || data.requestId,
+          customerName: data.customerName,
+          serviceRequested: data.serviceRequested || config.serviceName,
+          status: data.status || 'PENDING',
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
+          customerNote: data.customerNote || ''
+        };
+        if (requestReferenceNote) requestReferenceNote.textContent = 'Your Tracking Number: ' + tracking.trackingNumber;
+        document.getElementById('successTrackingNumber').textContent = tracking.trackingNumber;
+        document.getElementById('successCustomerName').textContent = tracking.customerName;
+        document.getElementById('successServiceName').textContent = tracking.serviceRequested;
+        document.getElementById('successRequestStatus').textContent = window.ABKABTrackingSlip.labelStatus(tracking.status);
+        document.getElementById('successSubmissionDate').textContent = window.ABKABTrackingSlip.dateText(tracking.createdAt);
+        document.getElementById('copyTrackingNumber').onclick = function () {
+          navigator.clipboard.writeText(tracking.trackingNumber).then(function () { document.getElementById('submissionCardStatus').textContent = 'Tracking number copied.'; }).catch(function () { document.getElementById('submissionCardStatus').textContent = 'Copy unavailable.'; });
+        };
+        document.getElementById('downloadTrackingSlip').onclick = function () {
+          window.ABKABTrackingSlip.download(tracking).then(function () { document.getElementById('submissionCardStatus').textContent = 'Tracking slip downloaded.'; }).catch(function (error) { document.getElementById('submissionCardStatus').textContent = error.message; });
+        };
+        document.getElementById('trackRequestLink').href = 'track-request.html?tracking=' + encodeURIComponent(tracking.trackingNumber);
         if (requestWhatsappLink) requestWhatsappLink.href = WHATSAPP_URL + '?text=' + encodeURIComponent(lines.join('\n').replace('Request submitted through the ABKAB Smart Solution website.', 'Request ID: ' + data.requestId));
         requestForm.closest('.section').hidden = true;
         requestSuccess.hidden = false;

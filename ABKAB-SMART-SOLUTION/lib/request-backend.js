@@ -30,4 +30,23 @@ async function supabase(path, options) {
 async function requireAdmin(req) { const match = (req.headers.cookie || '').match(/(?:^|;\s*)abkab_admin=([^;]+)/); if (!match) return null; const response = await fetch(`${env('SUPABASE_URL')}/auth/v1/user`, { headers: { apikey: env('SUPABASE_ANON_KEY'), Authorization: `Bearer ${decodeURIComponent(match[1])}` } }); if (!response.ok) return null; const user = await response.json(); return user && user.email && user.email.toLowerCase() === env('ADMIN_EMAIL').toLowerCase() ? user : null; }
 function sessionCookie(token, maxAge) { return `abkab_admin=${encodeURIComponent(token)}; Max-Age=${maxAge}; Path=/; HttpOnly; Secure; SameSite=Lax`; }
 function requestId() { return `ABKAB-${new Date().getUTCFullYear()}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`; }
-module.exports = { env, sendJson, supabase, requireAdmin, sessionCookie, requestId };
+function normalizeStatus(status) {
+	const value = String(status || '').trim().toUpperCase();
+	if (!value || value === 'NEW') return 'PENDING';
+	if (value === 'IN_PROGRESS') return 'PROCESSING';
+	if (value === 'WAITING_FOR_CUSTOMER') return 'UNDER_REVIEW';
+	return value;
+}
+function trackingStatusLabel(status) {
+	const value = normalizeStatus(status);
+	return {
+		PENDING: 'Pending',
+		UNDER_REVIEW: 'Under Review',
+		PROCESSING: 'Processing',
+		APPROVED: 'Approved',
+		COMPLETED: 'Completed',
+		REJECTED: 'Rejected',
+		CANCELLED: 'Cancelled'
+	}[value] || value.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (character) => character.toUpperCase());
+}
+module.exports = { env, sendJson, supabase, requireAdmin, sessionCookie, requestId, normalizeStatus, trackingStatusLabel };
