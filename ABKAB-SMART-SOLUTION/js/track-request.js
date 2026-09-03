@@ -9,6 +9,11 @@ document.addEventListener('DOMContentLoaded', function () {
     status.textContent = 'Checking securely...';
     status.className = 'form-status';
     result.hidden = true;
+    if (window.location.protocol === 'file:') {
+      status.textContent = 'Tracking needs the website server. Open the deployed website or run it through a local web server.';
+      status.className = 'form-status error';
+      return;
+    }
     fetch('/api/track-request', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ requestId: document.getElementById('trackingId').value, email: document.getElementById('trackingEmail').value }) })
       .then(function (response) { return response.json().then(function (data) { if (!response.ok) throw new Error(data.error || 'Tracking is temporarily unavailable.'); return data.request; }); })
       .then(function (request) {

@@ -443,7 +443,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function postJson(url, payload) {
-    return fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) }).then(function (response) {
+    if (window.location.protocol === 'file:') return Promise.reject(new Error('This request form needs the website server. Open the deployed website, or run the project through a local web server before submitting.'));
+    return fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) }).catch(function () {
+      throw new Error('The request service could not be reached. Please check your connection and try again.');
+    }).then(function (response) {
       return response.json().catch(function () { return {}; }).then(function (data) {
         if (!response.ok) throw new Error(data.error || 'Request failed.');
         return data;

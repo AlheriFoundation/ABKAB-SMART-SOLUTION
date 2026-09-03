@@ -134,6 +134,7 @@ module.exports = async function handler(req, res) {
     });
   } catch (error) {
     console.error(error);
+    if (error.code === '23514' || /request_id|check constraint/i.test(error.message || '')) return sendJson(res, 503, { error: 'The request system needs its database migration applied before submissions can be saved.' });
     return sendJson(res, 500, { error: 'We could not save your request. Please try again.' });
   }
 };
