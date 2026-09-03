@@ -1,4 +1,4 @@
-const { sendJson, supabase, normalizeStatus } = require('../lib/request-backend');
+const { sendJson, body, supabase, normalizeStatus } = require('../lib/request-backend');
 
 function text(value, maxLength) {
   return String(value == null ? '' : value).trim().slice(0, maxLength || 5000);
@@ -64,7 +64,8 @@ function requestPayload(input) {
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method not allowed' }, { Allow: 'POST' });
   try {
-    const input = req.body || {};
+    const input = body(req);
+    if (!input) return sendJson(res, 400, { error: 'Request body must be valid JSON.' });
     if (!input.requestDetails || typeof input.requestDetails !== 'object' || Array.isArray(input.requestDetails)) return sendJson(res, 400, { error: 'Please complete all required fields.' });
     const payload = requestPayload(input);
     const required = [payload.customerName, payload.phone, payload.email, payload.preferredContactMethod, payload.serviceRequested];
@@ -133,7 +134,7 @@ module.exports = async function handler(req, res) {
       customerNote: row.customer_note || ''
     });
   } catch (error) {
-    console.error(error);
+    console.error('Submit request API failed', { operation: error.operation || 'submit request', message: error.message, status: error.status || 500, responseBody: error.responseBody || null, code: error.code || null });
     if (error.code === '23514' || /request_id|check constraint/i.test(error.message || '')) return sendJson(res, 503, { error: 'The request system needs its database migration applied before submissions can be saved.' });
     if (error.code === '42703' || error.code === '42P01' || /column .* does not exist|relation .* does not exist/i.test(error.message || '')) return sendJson(res, 503, { error: 'The requests table is not ready. Please apply the Supabase database schema before submitting.' });
     return sendJson(res, 500, { error: 'We could not save your request. Please try again.' });

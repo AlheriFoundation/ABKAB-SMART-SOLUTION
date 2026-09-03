@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
         status.textContent = '';
         addActions();
       })
-      .catch(function (error) { status.textContent = error.message; status.className = 'form-status error'; });
+      .catch(function (error) { console.error('Tracking request failed', error.message); status.textContent = error.message; status.className = 'form-status error'; });
   }
   function updateTimeline(value) {
     var normalized = window.ABKABTrackingSlip.normalizeStatus(value);

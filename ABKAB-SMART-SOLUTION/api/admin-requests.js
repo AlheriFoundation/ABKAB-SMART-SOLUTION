@@ -1,4 +1,4 @@
-const { sendJson, supabase, requireAdmin, normalizeStatus } = require('../lib/request-backend');
+const { sendJson, body, supabase, requireAdmin, normalizeStatus } = require('../lib/request-backend');
 
 const statuses = ['PENDING', 'UNDER_REVIEW', 'PROCESSING', 'APPROVED', 'COMPLETED', 'REJECTED', 'CANCELLED'];
 
@@ -24,17 +24,17 @@ module.exports = async function handler(req, res) {
     }
     if (req.method !== 'PATCH') return sendJson(res, 405, { error: 'Method not allowed' }, { Allow: 'GET, PATCH' });
 
-    const input = req.body || {};
+    const input = body(req);
+    if (!input) return sendJson(res, 400, { error: 'Request body must be valid JSON.' });
     const requestId = text(input.requestId || input.trackingNumber, 40).toUpperCase();
     const status = normalizeStatus(input.status);
+    if (input.adminNotes !== undefined && typeof input.adminNotes !== 'string') return sendJson(res, 400, { error: 'Admin notes must be text.' });
+    if (input.customerNote !== undefined && typeof input.customerNote !== 'string') return sendJson(res, 400, { error: 'Customer note must be text.' });
     const adminNotes = input.adminNotes === undefined ? undefined : text(input.adminNotes, 5000);
     const customerNote = input.customerNote === undefined ? undefined : text(input.customerNote, 5000);
 
     if (!/^ABKAB-\d{4}-\d{6}$/.test(requestId)) return sendJson(res, 400, { error: 'Invalid tracking number.' });
     if (!statuses.includes(status)) return sendJson(res, 400, { error: 'Invalid status.' });
-    if (adminNotes !== undefined && typeof adminNotes !== 'string') return sendJson(res, 400, { error: 'Admin notes must be text.' });
-    if (customerNote !== undefined && typeof customerNote !== 'string') return sendJson(res, 400, { error: 'Customer note must be text.' });
-
     const update = { status, updated_at: new Date().toISOString() };
     if (adminNotes !== undefined) update.admin_notes = adminNotes;
     if (customerNote !== undefined) update.customer_note = customerNote;

@@ -161,6 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
         contactStatus.className = 'form-status success';
         sendEvent('contact_request_submitted', { request_id: data.requestId });
       }).catch(function (error) {
+        console.error('Contact request submission failed', error.message);
         contactForm.dataset.submitting = 'false';
         if (button) { button.disabled = false; button.innerHTML = 'Send Request <i class="fas fa-arrow-right"></i>'; }
         contactStatus.textContent = error.message;
@@ -255,10 +256,36 @@ document.addEventListener('DOMContentLoaded', function () {
         cacWhatsappLink.href = WHATSAPP_URL + '?text=' + encodeURIComponent(message);
         sessionStorage.setItem('abkabCacWhatsApp', cacWhatsappLink.href);
       }
-      sendEvent('cac_form_submitted');
-      if (cacSuccess) {
-        sessionStorage.setItem('abkabCacSubmitted', '1');
-      }
+      event.preventDefault();
+      if (cacForm.dataset.submitting === 'true') return;
+      cacForm.dataset.submitting = 'true';
+      var cacButton = cacForm.querySelector('[type="submit"]');
+      if (cacButton) { cacButton.disabled = true; cacButton.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Submitting...'; }
+      cacStatus.textContent = 'Saving your request securely...';
+      cacStatus.className = 'form-status';
+      var cacDetails = collectFormDetails(cacForm);
+      delete cacDetails['NIN Number'];
+      Object.keys(cacDetails).forEach(function (key) { if (/ File$/.test(key)) delete cacDetails[key]; });
+      postJson('/api/submit-request', {
+        serviceType: 'CAC Business Name Registration', customerName: value('cacName'), phone: value('cacPhone'), email: value('cacEmail'),
+        preferredContactMethod: 'Phone / WhatsApp', location: value('businessState'), address: value('businessAddress'), state: value('businessState'), lga: value('businessLga'),
+        description: value('nature'), requestDetails: cacDetails
+      }).then(function (data) {
+        var requestId = data.requestId;
+        var requestIdField = document.getElementById('cacRequestId');
+        if (requestIdField) requestIdField.value = requestId;
+        var subject = cacForm.querySelector('[name="_subject"]');
+        if (subject) subject.value = 'New CAC Request ' + requestId + ' - ABKAB Smart Solution';
+        sendEvent('cac_form_submitted', { request_id: requestId });
+        if (cacSuccess) sessionStorage.setItem('abkabCacSubmitted', '1');
+        HTMLFormElement.prototype.submit.call(cacForm);
+      }).catch(function (error) {
+        console.error('CAC request submission failed', error.message);
+        cacForm.dataset.submitting = 'false';
+        if (cacButton) { cacButton.disabled = false; cacButton.innerHTML = 'Submit CAC Request <i class="fas fa-arrow-right"></i>'; }
+        cacStatus.textContent = error.message;
+        cacStatus.className = 'form-status error';
+      });
     });
     if (sessionStorage.getItem('abkabCacSubmitted') === '1' && cacSuccess) {
       cacSuccess.hidden = false;
@@ -512,7 +539,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var config = serviceConfigs[key];
     var reference = params.get('ref') || sessionStorage.getItem('abkabRequestReference') || '';
 
-    requestForm.action = FORM_ENDPOINT;
+    requestForm.action = '/api/submit-request';
     requestTitle.textContent = config.title;
     requestIntro.textContent = config.intro;
     formTitle.textContent = config.title;
@@ -654,6 +681,7 @@ document.addEventListener('DOMContentLoaded', function () {
         requestSuccess.scrollIntoView({ block: 'start' });
         sendEvent('service_request_submitted', { service: key, request_id: data.requestId });
       }).catch(function (error) {
+        console.error('Service request submission failed', error.message);
         requestForm.dataset.submitting = 'false';
         requestSubmit.disabled = false;
         requestSubmit.innerHTML = esc(config.cta) + ' <i class="fas fa-arrow-right"></i>';

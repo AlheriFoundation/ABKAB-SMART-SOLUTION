@@ -9,6 +9,11 @@ function env(name) {
 	return process.env[name];
 }
 function sendJson(res, status, body, headers) { res.status(status); if (headers) Object.entries(headers).forEach(([name, value]) => res.setHeader(name, value)); return res.json(body); }
+function body(req) {
+	if (!req.body) return {};
+	if (typeof req.body === 'object') return req.body;
+	try { return JSON.parse(req.body); } catch (_) { return null; }
+}
 function supabaseHeaders(extra) { return { apikey: env('SUPABASE_SERVICE_ROLE_KEY'), Authorization: `Bearer ${env('SUPABASE_SERVICE_ROLE_KEY')}`, ...(extra || {}) }; }
 async function supabase(path, options) {
 	const operation = options && options.operation || 'Supabase request';
@@ -49,4 +54,4 @@ function trackingStatusLabel(status) {
 		CANCELLED: 'Cancelled'
 	}[value] || value.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (character) => character.toUpperCase());
 }
-module.exports = { env, sendJson, supabase, requireAdmin, sessionCookie, requestId, normalizeStatus, trackingStatusLabel };
+module.exports = { env, sendJson, body, supabase, requireAdmin, sessionCookie, requestId, normalizeStatus, trackingStatusLabel };

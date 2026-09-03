@@ -1,4 +1,4 @@
-const { sendJson, supabase, normalizeStatus } = require('../lib/request-backend');
+const { sendJson, body, supabase, normalizeStatus } = require('../lib/request-backend');
 
 function text(value, maxLength) {
   return String(value == null ? '' : value).trim().slice(0, maxLength || 5000);
@@ -7,7 +7,8 @@ function text(value, maxLength) {
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method not allowed' }, { Allow: 'POST' });
   try {
-    const input = req.body || {};
+    const input = body(req);
+    if (!input) return sendJson(res, 400, { error: 'Request body must be valid JSON.' });
     const trackingNumber = text(input.trackingNumber || input.requestId, 40).toUpperCase();
     const email = text(input.email, 254).toLowerCase();
     if (!email) return sendJson(res, 400, { error: 'Enter the email address used for this request.' });
@@ -33,7 +34,7 @@ module.exports = async function handler(req, res) {
       }
     });
   } catch (error) {
-    console.error(error);
+    console.error('Track request API failed', { operation: error.operation || 'track request', message: error.message, status: error.status || 500, responseBody: error.responseBody || null, code: error.code || null });
     return sendJson(res, 500, { error: 'Tracking is temporarily unavailable.' });
   }
 };
