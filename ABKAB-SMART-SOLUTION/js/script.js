@@ -451,6 +451,52 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  function collectFormDetails(form) {
+    var details = {};
+    Array.prototype.forEach.call(form.elements, function (el) {
+      if (!el.name || el.type === 'file' || el.name.charAt(0) === '_') return;
+      if (el.type === 'checkbox') {
+        if (!el.checked) return;
+        details[el.name] = details[el.name] ? details[el.name] + ', ' + el.value : el.value;
+        return;
+      }
+      details[el.name] = el.value.trim();
+    });
+    return details;
+  }
+
+  function renderTrackingCard(canvas, request) {
+    var context = canvas.getContext('2d');
+    context.fillStyle = '#f7f9fd'; context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = '#0c2a76'; context.fillRect(0, 0, canvas.width, 250);
+    context.fillStyle = '#e31a1a'; context.fillRect(0, 250, canvas.width, 14);
+    var logo = new Image();
+    logo.onload = function () { context.drawImage(logo, 90, 48, 380, 136); drawTrackingCardText(context, request); };
+    logo.onerror = function () { drawTrackingCardText(context, request); };
+    logo.src = 'images/logo.svg';
+  }
+
+  function drawTrackingCardText(context, request) {
+    function dateLabel(value) { return new Date(value).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); }
+    context.fillStyle = '#ffffff'; context.font = '800 42px Manrope, Arial, sans-serif'; context.fillText('REQUEST TRACKING CARD', 90, 360);
+    context.fillStyle = '#0c2a76'; context.font = '800 68px Manrope, Arial, sans-serif'; context.fillText(request.requestId, 90, 470);
+    context.fillStyle = '#526078'; context.font = '700 27px Inter, Arial, sans-serif'; context.fillText('TRACKING NUMBER', 94, 515);
+    context.fillStyle = '#14213d'; context.font = '800 34px Manrope, Arial, sans-serif'; context.fillText('Service', 90, 630); context.font = '500 34px Inter, Arial, sans-serif'; context.fillText(request.serviceType, 330, 630);
+    context.font = '800 34px Manrope, Arial, sans-serif'; context.fillText('Submitted', 90, 710); context.font = '500 34px Inter, Arial, sans-serif'; context.fillText(dateLabel(request.createdAt), 330, 710);
+    context.font = '800 34px Manrope, Arial, sans-serif'; context.fillText('Status', 90, 790); context.fillStyle = '#e31a1a'; context.font = '800 38px Manrope, Arial, sans-serif'; context.fillText(request.status.replace(/_/g, ' '), 330, 790);
+    context.fillStyle = '#14213d'; context.font = '800 34px Manrope, Arial, sans-serif'; context.fillText('Last updated', 90, 870); context.font = '500 34px Inter, Arial, sans-serif'; context.fillText(dateLabel(request.updatedAt), 330, 870);
+    context.fillStyle = '#526078'; context.font = '500 28px Inter, Arial, sans-serif'; context.fillText('Keep this card safe. Use your Tracking Number to track your request.', 90, 985); context.font = '700 27px Inter, Arial, sans-serif'; context.fillText('www.abkabsmartsolution.site', 90, 1065);
+  }
+
+  function prepareTrackingCardActions(request) {
+    var save = document.getElementById('downloadTrackingCard'); var image = document.getElementById('saveTrackingImage'); var share = document.getElementById('shareSubmittedCard');
+    if (!save || !image || !share) return;
+    var canvas = document.createElement('canvas'); canvas.width = 1800; canvas.height = 1125; canvas.hidden = true; document.body.appendChild(canvas); renderTrackingCard(canvas, request);
+    function imageBlob(callback) { canvas.toBlob(callback, 'image/png'); }
+    function download() { imageBlob(function (blob) { var link = document.createElement('a'); link.download = request.requestId + '-tracking-card.png'; link.href = URL.createObjectURL(blob); link.click(); setTimeout(function () { URL.revokeObjectURL(link.href); }, 1000); }); }
+    save.onclick = download; image.onclick = download; share.hidden = !navigator.share; share.onclick = function () { imageBlob(function (blob) { navigator.share({ title: 'ABKAB Request Tracking Card', text: request.requestId, files: [new File([blob], request.requestId + '-tracking-card.png', { type: 'image/png' })] }).catch(function () {}); }); };
+  }
+
   function setupRequestForm() {
     if (!requestForm || !serviceFields) return;
     var requestedKey = params.get('service') || 'website';
@@ -574,14 +620,13 @@ document.addEventListener('DOMContentLoaded', function () {
       requestSubmit.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Submitting...';
       requestStatus.textContent = 'Saving your request securely...';
       requestStatus.className = 'form-status';
-      var details = {};
-      config.fields.forEach(function (field) { details[field.name] = field.type === 'checkboxes' ? selectedCheckboxes(field.id) : requestValue(field.id); });
-      details['Additional Notes'] = requestValue('requestNotes');
+      var details = collectFormDetails(requestForm);
       postJson('/api/submit-request', {
         serviceType: config.serviceName, customerName: requestValue('requestName'), phone: requestValue('requestPhone'),
         email: requestValue('requestEmail'), preferredContactMethod: requestValue('contactMethod'), location: requestValue('requestLocation'), requestDetails: details
       }).then(function (data) {
-        if (requestReferenceNote) requestReferenceNote.textContent = 'Request ID: ' + data.requestId;
+        if (requestReferenceNote) requestReferenceNote.textContent = 'Your Tracking Number: ' + data.requestId;
+        prepareTrackingCardActions({ requestId: data.requestId, serviceType: data.serviceType || config.serviceName, status: data.status, createdAt: data.createdAt, updatedAt: data.updatedAt });
         if (requestWhatsappLink) requestWhatsappLink.href = WHATSAPP_URL + '?text=' + encodeURIComponent(lines.join('\n').replace('Request submitted through the ABKAB Smart Solution website.', 'Request ID: ' + data.requestId));
         requestForm.closest('.section').hidden = true;
         requestSuccess.hidden = false;

@@ -12,6 +12,6 @@ module.exports = async function handler(req, res) {
     const saved = await supabase('requests', { method: 'POST', headers: { 'content-type': 'application/json', Prefer: 'return=representation' }, body: JSON.stringify(record) });
     const row = saved[0];
     if (process.env.FORMSUBMIT_ENDPOINT) fetch(process.env.FORMSUBMIT_ENDPOINT, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...record, 'Request ID': row.request_id, _subject: `New request ${row.request_id} - ABKAB Smart Solution`, _template: 'table' }) }).catch(() => {});
-    return sendJson(res, 201, { requestId: row.request_id, status: row.status });
+    return sendJson(res, 201, { requestId: row.request_id, status: row.status, serviceType: row.service_type, createdAt: row.created_at, updatedAt: row.updated_at });
   } catch (error) { console.error(error); return sendJson(res, 500, { error: 'We could not save your request. Please try again.' }); }
 };
