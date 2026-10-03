@@ -4,6 +4,18 @@ document.addEventListener('DOMContentLoaded', function () {
   var SITE_URL = 'https://www.abkabsmartsolution.site/';
   var params = new URLSearchParams(window.location.search);
   var pageName = window.location.pathname.split('/').pop().replace(/\.html$/, '').toLowerCase() || 'home';
+  var attributionKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'];
+  var attribution = {};
+  try {
+    attribution = JSON.parse(sessionStorage.getItem('abkabAttribution') || '{}');
+  } catch (_) {}
+  attributionKeys.forEach(function (key) {
+    var value = params.get(key);
+    if (value) attribution[key] = value.slice(0, 120);
+  });
+  try {
+    if (Object.keys(attribution).length) sessionStorage.setItem('abkabAttribution', JSON.stringify(attribution));
+  } catch (_) {}
   document.body.classList.add('page-' + pageName);
 
   document.querySelectorAll('.nav-cta').forEach(function (link) {
@@ -14,6 +26,9 @@ document.addEventListener('DOMContentLoaded', function () {
     link.href = 'request.html';
     link.textContent = 'Request a Service';
   });
+  document.querySelectorAll('.mini-service .btn-secondary').forEach(function (link) {
+    link.innerHTML = 'Request a Service <i class="fas fa-arrow-right"></i>';
+  });
 
   document.querySelectorAll('img:not([loading])').forEach(function (image) {
     if (!image.closest('.brand, .footer-brand')) image.loading = 'lazy';
@@ -21,8 +36,34 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   function sendEvent(name, data) {
-    if (typeof gtag === 'function') gtag('event', name, data || {});
+    if (typeof gtag === 'function') gtag('event', name, Object.assign({ page: pageName }, attribution, data || {}));
   }
+
+  window.ABKABAnalytics = { track: sendEvent };
+
+  function whatsappUrl(service, requestId) {
+    var message = service ? 'Hello ABKAB, I would like to ask about ' + service + '.' : 'Hello ABKAB, I would like to discuss a service.';
+    if (requestId) message += ' My request reference is ' + requestId + '.';
+    return WHATSAPP_URL + '?text=' + encodeURIComponent(message);
+  }
+
+  var pageService = params.get('service') || '';
+  document.querySelectorAll('a[href*="wa.me"]').forEach(function (link) {
+    if (pageService && !link.id) link.href = whatsappUrl(pageService);
+    link.addEventListener('click', function () {
+      sendEvent('whatsapp_clicked', { service: pageService || undefined, label: link.textContent.trim().slice(0, 80) });
+    });
+  });
+  document.querySelectorAll('a[href^="tel:"],a[href^="mailto:"],a[href*="contact.html"]').forEach(function (link) {
+    link.addEventListener('click', function () { sendEvent('contact_clicked', { label: link.textContent.trim().slice(0, 80) }); });
+  });
+  document.querySelectorAll('a[href*="service="]').forEach(function (link) {
+    link.addEventListener('click', function () {
+      var destination = new URL(link.href, window.location.href);
+      sendEvent('service_interest', { service: destination.searchParams.get('service') || 'selected' });
+    });
+  });
+  if (pageService) sendEvent('service_view', { service: pageService });
 
   function value(id) {
     var el = document.getElementById(id);
@@ -165,6 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   if (contactForm) {
     contactForm.addEventListener('submit', function (event) {
+      sendEvent('request_started', { service: value('service') || 'contact' });
       if (!contactForm.checkValidity()) {
         event.preventDefault();
         contactStatus.textContent = 'Please complete the required fields before sending your request.';
@@ -197,6 +239,7 @@ document.addEventListener('DOMContentLoaded', function () {
           contactTrackingLink.hidden = false;
         }
         sendEvent('contact_request_submitted', { request_id: data.requestId });
+        sendEvent('request_submitted', { service: value('service') || 'contact', request_id: data.requestId });
       }).catch(function (error) {
         console.error('Contact request submission failed', error.message);
         contactForm.dataset.submitting = 'false';
@@ -588,12 +631,14 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('requestAutoresponse').value = 'Thank you for choosing ABKAB Smart Solution.\n\nWe have received your ' + config.serviceName + ' request. Our team will review it and contact you using your preferred contact method.\n\nABKAB Smart Solution\n' + SITE_URL;
 
     sendEvent('service_request_viewed', { service: key });
+    sendEvent('service_view', { service: config.serviceName });
 
     requestForm.querySelectorAll('input,select,textarea').forEach(function (el) {
       el.addEventListener('input', function () {
         if (!requestStarted) {
           requestStarted = true;
           sendEvent('service_request_form_started', { service: key });
+          sendEvent('request_started', { service: config.serviceName });
         }
         if (el.type !== 'file') setError(el, '');
       });
@@ -717,6 +762,7 @@ document.addEventListener('DOMContentLoaded', function () {
         requestSuccess.hidden = false;
         requestSuccess.scrollIntoView({ block: 'start' });
         sendEvent('service_request_submitted', { service: key, request_id: data.requestId });
+        sendEvent('request_submitted', { service: config.serviceName, request_id: data.requestId });
       }).catch(function (error) {
         console.error('Service request submission failed', error.message);
         requestForm.dataset.submitting = 'false';

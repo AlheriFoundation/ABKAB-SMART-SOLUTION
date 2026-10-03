@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', function () {
   var form = document.getElementById('trackingForm');
   var status = document.getElementById('trackingStatus');
   var result = document.getElementById('trackingResult');
+  var followup = document.getElementById('trackingFollowup');
+  var whatsappLink = document.getElementById('trackingWhatsappLink');
   var params = new URLSearchParams(window.location.search);
   var currentRequest;
 
@@ -18,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(function (response) { return response.json().then(function (data) { if (!response.ok) throw new Error(data.error || 'Tracking is temporarily unavailable.'); return data.request; }); })
       .then(function (request) {
         currentRequest = request;
+        if (window.ABKABAnalytics) window.ABKABAnalytics.track('tracking_viewed', { service: request.service_type });
         document.getElementById('resultId').textContent = request.request_id;
         document.getElementById('resultCustomer').textContent = request.customer_name;
         document.getElementById('resultService').textContent = request.service_type;
@@ -25,6 +28,8 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('resultCreated').textContent = window.ABKABTrackingSlip.dateText(request.created_at);
         document.getElementById('resultUpdated').textContent = window.ABKABTrackingSlip.dateText(request.updated_at);
         document.getElementById('resultNote').textContent = request.customer_note || 'No customer-facing update has been added.';
+        if (followup) followup.hidden = false;
+        if (whatsappLink) whatsappLink.href = 'https://wa.me/2349061222869?text=' + encodeURIComponent('Hello ABKAB, I am following up on request ' + request.request_id + ' for ' + request.service_type + '.');
         updateTimeline(request.status);
         result.hidden = false;
         status.textContent = '';
