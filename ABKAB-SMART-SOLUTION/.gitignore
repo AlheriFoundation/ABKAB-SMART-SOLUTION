@@ -4,3 +4,10 @@
 
 node_modules/
 .DS_Store
+logs/
+credentials/
+*.pem
+*.key
+*.p12
+*.pfx
+*.local

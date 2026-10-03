@@ -1,0 +1,13 @@
+# Local QA and workspace artifacts
+_tmp/
+
+# Secrets and private deployment material
+.env
+.env.*
+!.env.example
+credentials/
+logs/
+*.pem
+*.key
+*.p12
+*.pfx

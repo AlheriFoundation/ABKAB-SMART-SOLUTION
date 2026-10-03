@@ -3,6 +3,22 @@ document.addEventListener('DOMContentLoaded', function () {
   var FORM_ENDPOINT = 'https://formsubmit.co/abdulwasiukura@gmail.com';
   var SITE_URL = 'https://www.abkabsmartsolution.site/';
   var params = new URLSearchParams(window.location.search);
+  var pageName = window.location.pathname.split('/').pop().replace(/\.html$/, '').toLowerCase() || 'home';
+  document.body.classList.add('page-' + pageName);
+
+  document.querySelectorAll('.nav-cta').forEach(function (link) {
+    link.href = 'request.html';
+    link.textContent = 'Request a Service';
+  });
+  document.querySelectorAll('.cta-band .btn-light').forEach(function (link) {
+    link.href = 'request.html';
+    link.textContent = 'Request a Service';
+  });
+
+  document.querySelectorAll('img:not([loading])').forEach(function (image) {
+    if (!image.closest('.brand, .footer-brand')) image.loading = 'lazy';
+    image.decoding = 'async';
+  });
 
   function sendEvent(name, data) {
     if (typeof gtag === 'function') gtag('event', name, data || {});
@@ -125,6 +141,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var contactForm = document.getElementById('contactForm');
   var contactStatus = document.getElementById('formStatus');
+  var contactTrackingLink = document.getElementById('contactTrackingLink');
+  var requestedContactService = params.get('service');
+  var contactServiceSelect = document.getElementById('service');
+  if (requestedContactService && contactServiceSelect) {
+    var normalizedService = requestedContactService.trim().toLowerCase();
+    Array.prototype.some.call(contactServiceSelect.options, function (option) {
+      if (option.text.trim().toLowerCase() === normalizedService || option.value.trim().toLowerCase() === normalizedService) {
+        contactServiceSelect.value = option.value || option.text;
+        return true;
+      }
+      return false;
+    });
+    if (!contactServiceSelect.value) {
+      var customOption = new Option(requestedContactService, requestedContactService, true, true);
+      contactServiceSelect.add(customOption);
+    }
+  }
   if (params.get('sent') === '1' && contactStatus) {
     contactStatus.textContent = 'Thank you - your request has been sent. We will review it and respond as soon as possible.';
     contactStatus.className = 'form-status success';
@@ -159,6 +192,10 @@ document.addEventListener('DOMContentLoaded', function () {
       }).then(function (data) {
         contactStatus.textContent = 'Thank you. Your request ID is ' + data.requestId + '. We will review it and respond soon.';
         contactStatus.className = 'form-status success';
+        if (contactTrackingLink && data.requestId) {
+          contactTrackingLink.href = 'track-request.html?tracking=' + encodeURIComponent(data.requestId);
+          contactTrackingLink.hidden = false;
+        }
         sendEvent('contact_request_submitted', { request_id: data.requestId });
       }).catch(function (error) {
         console.error('Contact request submission failed', error.message);
@@ -717,7 +754,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
     }, { threshold: 0.12 });
-    document.querySelectorAll('.service-card,.service-detail,.project-card,.reason,.process-step,.testimonial-empty').forEach(function (item) {
+    document.querySelectorAll('.service-card,.service-detail,.project-card,.reason,.process-step,.testimonial-empty,main .section:not(.page-hero) .section-heading,.about-panel,.quick-item,.contact-form,.cac-layout,.request-layout,.request-result').forEach(function (item) {
       item.classList.add('reveal');
       observer.observe(item);
     });

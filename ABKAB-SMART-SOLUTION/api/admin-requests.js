@@ -50,6 +50,6 @@ module.exports = async function handler(req, res) {
   } catch (error) {
     const operation = error.operation || (req.method === 'PATCH' ? 'update admin request' : 'authorize/list admin requests');
     console.error('Admin request API failed', { operation, message: error.message, status: error.status || 500, responseBody: error.responseBody || null, code: error.code || null });
-    return sendJson(res, error.code === 'CONFIGURATION_ERROR' ? 500 : (error.status >= 400 && error.status < 600 ? 502 : 500), { error: error.message });
+    return sendJson(res, error.code === 'CONFIGURATION_ERROR' ? 500 : (error.status >= 400 && error.status < 600 ? 502 : 500), { error: 'The admin request service is temporarily unavailable.' });
   }
 };
