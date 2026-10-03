@@ -593,13 +593,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function drawTrackingCardText(context, request) {
     function dateLabel(value) { return new Date(value).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); }
-    context.fillStyle = '#ffffff'; context.font = '800 42px Manrope, Arial, sans-serif'; context.fillText('REQUEST TRACKING CARD', 90, 360);
-    context.fillStyle = '#0c2a76'; context.font = '800 68px Manrope, Arial, sans-serif'; context.fillText(request.requestId, 90, 470);
+    context.fillStyle = '#ffffff'; context.font = '800 42px Inter, Arial, sans-serif'; context.fillText('REQUEST TRACKING CARD', 90, 360);
+    context.fillStyle = '#0c2a76'; context.font = '800 68px Inter, Arial, sans-serif'; context.fillText(request.requestId, 90, 470);
     context.fillStyle = '#526078'; context.font = '700 27px Inter, Arial, sans-serif'; context.fillText('TRACKING NUMBER', 94, 515);
-    context.fillStyle = '#14213d'; context.font = '800 34px Manrope, Arial, sans-serif'; context.fillText('Service', 90, 630); context.font = '500 34px Inter, Arial, sans-serif'; context.fillText(request.serviceType, 330, 630);
-    context.font = '800 34px Manrope, Arial, sans-serif'; context.fillText('Submitted', 90, 710); context.font = '500 34px Inter, Arial, sans-serif'; context.fillText(dateLabel(request.createdAt), 330, 710);
-    context.font = '800 34px Manrope, Arial, sans-serif'; context.fillText('Status', 90, 790); context.fillStyle = '#e31a1a'; context.font = '800 38px Manrope, Arial, sans-serif'; context.fillText(request.status.replace(/_/g, ' '), 330, 790);
-    context.fillStyle = '#14213d'; context.font = '800 34px Manrope, Arial, sans-serif'; context.fillText('Last updated', 90, 870); context.font = '500 34px Inter, Arial, sans-serif'; context.fillText(dateLabel(request.updatedAt), 330, 870);
+    context.fillStyle = '#14213d'; context.font = '800 34px Inter, Arial, sans-serif'; context.fillText('Service', 90, 630); context.font = '500 34px Inter, Arial, sans-serif'; context.fillText(request.serviceType, 330, 630);
+    context.font = '800 34px Inter, Arial, sans-serif'; context.fillText('Submitted', 90, 710); context.font = '500 34px Inter, Arial, sans-serif'; context.fillText(dateLabel(request.createdAt), 330, 710);
+    context.font = '800 34px Inter, Arial, sans-serif'; context.fillText('Status', 90, 790); context.fillStyle = '#e31a1a'; context.font = '800 38px Inter, Arial, sans-serif'; context.fillText(request.status.replace(/_/g, ' '), 330, 790);
+    context.fillStyle = '#14213d'; context.font = '800 34px Inter, Arial, sans-serif'; context.fillText('Last updated', 90, 870); context.font = '500 34px Inter, Arial, sans-serif'; context.fillText(dateLabel(request.updatedAt), 330, 870);
     context.fillStyle = '#526078'; context.font = '500 28px Inter, Arial, sans-serif'; context.fillText('Keep this card safe. Use your Tracking Number to track your request.', 90, 985); context.font = '700 27px Inter, Arial, sans-serif'; context.fillText('www.abkabsmartsolution.site', 90, 1065);
   }
 

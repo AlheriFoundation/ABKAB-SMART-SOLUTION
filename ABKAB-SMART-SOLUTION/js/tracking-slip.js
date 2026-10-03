@@ -136,11 +136,11 @@ window.ABKABTrackingSlip = (function () {
     context.globalAlpha = 1;
 
     context.fillStyle = '#ffffff';
-    context.font = '800 34px Manrope, Arial, sans-serif';
+    context.font = '800 34px Inter, Arial, sans-serif';
     context.fillText('ABKAB SMART SOLUTION', 96, 78);
     context.font = '600 20px Inter, Arial, sans-serif';
     context.fillText('Customer Request Tracking', 98, 118);
-    context.font = '800 58px Manrope, Arial, sans-serif';
+    context.font = '800 58px Inter, Arial, sans-serif';
     context.fillText(data.trackingNumber || 'Tracking Number', 96, 188);
 
     context.fillStyle = '#eef4ff';
@@ -150,7 +150,7 @@ window.ABKABTrackingSlip = (function () {
     context.font = '800 19px Inter, Arial, sans-serif';
     context.fillText('REQUEST STATUS', 974, 104);
     context.fillStyle = statusColor;
-    context.font = '800 38px Manrope, Arial, sans-serif';
+    context.font = '800 38px Inter, Arial, sans-serif';
     context.fillText(labelStatus(data.status), 974, 148);
 
     context.fillStyle = '#ffffff';
@@ -164,7 +164,7 @@ window.ABKABTrackingSlip = (function () {
     context.shadowOffsetY = 0;
 
     context.fillStyle = '#14213d';
-    context.font = '800 26px Manrope, Arial, sans-serif';
+    context.font = '800 26px Inter, Arial, sans-serif';
     context.fillText('Tracking Overview', 112, 392);
     context.strokeStyle = '#dfe6f1';
     context.lineWidth = 2;
@@ -195,7 +195,7 @@ window.ABKABTrackingSlip = (function () {
       context.font = '700 18px Inter, Arial, sans-serif';
       context.fillText(item[0].toUpperCase(), colX, rowY);
       context.fillStyle = item[0] === 'Current Status' ? statusColor : '#14213d';
-      context.font = item[0] === 'Current Status' ? '800 32px Manrope, Arial, sans-serif' : '700 31px Manrope, Arial, sans-serif';
+      context.font = item[0] === 'Current Status' ? '800 32px Inter, Arial, sans-serif' : '700 31px Inter, Arial, sans-serif';
       wrapText(context, item[1], colX, rowY + 46, 540, 42, 2);
     });
 
@@ -203,7 +203,7 @@ window.ABKABTrackingSlip = (function () {
     roundedRect(context, 112, 1120, 1378, 230, 28);
     context.fill();
     context.fillStyle = '#0c2a76';
-    context.font = '800 22px Manrope, Arial, sans-serif';
+    context.font = '800 22px Inter, Arial, sans-serif';
     context.fillText('Customer Note', 146, 1166);
     context.fillStyle = '#14213d';
     context.font = '500 24px Inter, Arial, sans-serif';
