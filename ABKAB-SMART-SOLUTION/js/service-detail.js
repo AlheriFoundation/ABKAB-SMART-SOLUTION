@@ -7,7 +7,10 @@
     cloud: ['Cloud Services', 'Move your systems and files to a dependable cloud setup with practical guidance.', ['Cloud hosting and storage', 'Migration and backup planning', 'Access, security and user management', 'Cloud platform and provider guidance']],
     cac: ['CAC Registration', 'Get focused support preparing your business registration information and documents.', ['Business name registration support', 'Business information and document preparation', 'Name and activity guidance', 'Follow-up support through submission']],
     branding: ['Branding & Printing', 'Present your business consistently across identity, design and physical materials.', ['Logo and brand identity design', 'Flyers, banners and business cards', 'Print specifications and production', 'Reference-led creative support']],
-    marketing: ['Digital Marketing', 'Reach the right audience with clear content, platforms and campaigns.', ['Social media management', 'Content and campaign planning', 'Advertising and audience targeting', 'Performance-focused digital support']]
+    marketing: ['Digital Marketing', 'Reach the right audience with clear content, platforms and campaigns.', ['Social media management', 'Content and campaign planning', 'Advertising and audience targeting', 'Performance-focused digital support']],
+    'digital-business': ['Digital Business Services', 'Get practical help with the digital tasks and workflows that keep business moving.', ['Account and POS support', 'Digital payment guidance', 'Online applications', 'Business documentation']],
+    identity: ['Identity & Registration Support', 'Get guidance for identity and registration processes through appropriate channels.', ['NIN registration support', 'BVN guidance', 'Identity verification', 'Online registration assistance']],
+    printing: ['Printing & Documents', 'Prepare professional print and document materials with clear specifications.', ['Document printing', 'Flyers, banners and business cards', 'Binding and finishing', 'Reference-led production']]
   };
   var item = content[key] || content['web-development'];
   document.title = item[0] + ' | ABKAB Smart Solution';

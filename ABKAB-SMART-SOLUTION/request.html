@@ -128,9 +128,15 @@
             </div>
           </fieldset>
 
+          <div id="noScriptServiceInfo" class="request-fallback-info">
+            <span class="eyebrow">Service requirements</span>
+            <h2>Tell us what you need for this service</h2>
+            <p>Choose the closest service link to load the matching requirements. The form remains usable without JavaScript through the secure fallback submission.</p>
+            <ul class="check-list"><li><i class="fas fa-check"></i>Website: type, pages, features, domain, hosting, budget and deadline.</li><li><i class="fas fa-check"></i>Networking: location, users, devices, Wi-Fi, cabling, security and installation.</li><li><i class="fas fa-check"></i>Branding and printing: item, design, quantity, size, material, deadline and reference.</li><li><i class="fas fa-check"></i>CAC: registration type, proposed name, business activity, address, owners and TIN.</li></ul>
+          </div>
           <fieldset>
-            <legend>Service Information</legend>
-            <input id="serviceNameField" name="Service" type="hidden">
+            <legend id="serviceRequirementsLegend">Service Requirements</legend>
+            <input id="serviceNameField" name="Service" type="hidden" value="Web Development">
             <input id="serviceKeyField" name="Service Key" type="hidden">
             <input id="requestReferenceField" name="Request Reference" type="hidden">
             <div id="serviceFields" class="form-grid"></div>
@@ -155,7 +161,7 @@
             <a class="text-link" href="services.html">Back to Services</a>
           </div>
           <p id="requestStatus" class="form-status" role="status" aria-live="polite" aria-atomic="true"></p>
-          <noscript><p class="form-status">JavaScript is disabled. Please use the general request form on the Contact page or enable JavaScript to load this service-specific form.</p></noscript>
+          <noscript><p class="form-status">JavaScript enhancement is unavailable. Complete the customer details and service requirements above, then submit this form. Your request will be sent through the secure fallback.</p></noscript>
         </form>
 
         <aside class="cac-sidebar request-sidebar">
