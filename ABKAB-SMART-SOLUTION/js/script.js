@@ -857,6 +857,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var revealItems = document.querySelectorAll('.service-card,.service-detail,.mini-service,.project-card,.reason,.process-step,.testimonial-empty,.acquisition-card,.trust-card,.cta-band,main .section:not(.page-hero) .section-heading,.about-panel,.quick-item,.contact-form,.cac-layout,.request-layout,.request-result');
     revealItems.forEach(function (item, index) {
       item.classList.add('reveal');
+      item.classList.add(index % 2 === 0 ? 'reveal-left' : 'reveal-right');
       item.style.setProperty('--reveal-delay', Math.min(index % 6, 5) * 70 + 'ms');
       observer.observe(item);
     });
