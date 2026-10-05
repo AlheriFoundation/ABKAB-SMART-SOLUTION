@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.querySelectorAll('.nav-cta').forEach(function (link) {
     link.href = 'request.html';
-    link.textContent = 'Request a Service';
+    if (!link.textContent.trim()) link.textContent = 'Start a Project';
   });
   document.querySelectorAll('.main-nav a').forEach(function (link) {
     if (link.textContent.trim().toLowerCase() === 'solutions') link.closest('li').remove();

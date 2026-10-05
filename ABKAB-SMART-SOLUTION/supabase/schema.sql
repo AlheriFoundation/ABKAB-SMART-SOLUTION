@@ -143,3 +143,42 @@ alter table public.requests enable row level security;
 revoke all on public.requests from anon, authenticated;
 
 notify pgrst, 'reload schema';
+
+-- Isolated content tables for the admin CMS. Existing request data is untouched.
+create table if not exists public.homepage_content (
+  id uuid primary key default gen_random_uuid(), status text not null default 'DRAFT' check (status in ('DRAFT','PUBLISHED')),
+  eyebrow text not null default 'ABKAB SMART SOLUTION', headline text not null default 'Technology, designed to move business forward.',
+  body text not null default 'ABKAB builds practical technology, digital experiences and business systems that help organisations work better.',
+  primary_cta_text text not null default 'Start a Project', primary_cta_link text not null default 'request.html?service=website',
+  secondary_cta_text text not null default 'Explore Services', secondary_cta_link text not null default 'services.html',
+  positioning_statement text not null default 'Practical technology, digital experiences and business systems for organisations ready to work better.',
+  why_heading text not null default 'A better way to move work forward.', why_description text not null default 'Clear thinking, reliable delivery and technology that earns its place in the business.',
+  process_heading text not null default 'A clear route from need to delivery.', process_description text not null default 'We keep the work focused, visible and useful at every stage.',
+  final_cta_heading text not null default 'Have a project in mind?', final_cta_description text not null default 'Tell us what needs to work better. We will help define the next step.',
+  company_description text not null default 'Practical technology, digital experiences and business systems for organisations ready to work better.',
+  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create table if not exists public.media_library (
+  id uuid primary key default gen_random_uuid(), title text not null default '', alt_text text not null default '', src text not null, type text not null default 'image', section text not null default 'GENERAL', status text not null default 'DRAFT' check (status in ('DRAFT','PUBLISHED')), created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create table if not exists public.portfolio_items (
+  id uuid primary key default gen_random_uuid(), name text not null, category text not null default '', description text not null default '', cover_image text not null default '', additional_image text not null default '', project_url text not null default '', featured boolean not null default false, status text not null default 'DRAFT' check (status in ('DRAFT','PUBLISHED')), display_order integer not null default 0, created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create table if not exists public.service_categories (
+  id uuid primary key default gen_random_uuid(), slug text not null unique, name text not null, description text not null default '', image text not null default '', icon text not null default '', status text not null default 'PUBLISHED' check (status in ('DRAFT','PUBLISHED')), display_order integer not null default 0, created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create table if not exists public.site_settings (
+  id uuid primary key default gen_random_uuid(), name text not null unique, value text not null default '', status text not null default 'PUBLISHED' check (status in ('DRAFT','PUBLISHED')), created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+alter table public.homepage_content enable row level security; alter table public.media_library enable row level security; alter table public.portfolio_items enable row level security; alter table public.service_categories enable row level security; alter table public.site_settings enable row level security;
+revoke all on public.homepage_content, public.media_library, public.portfolio_items, public.service_categories, public.site_settings from anon, authenticated;
+
+insert into public.homepage_content (status) select 'PUBLISHED' where not exists (select 1 from public.homepage_content);
+insert into public.service_categories (slug, name, description, display_order) values
+  ('web-development','Digital Products','Websites, software and business systems.',1),
+  ('networking','Networking & Cloud','Infrastructure, devices and workplace connectivity.',2),
+  ('branding','Branding & Creative','Identity and communication materials.',3),
+  ('identity','Business & Identity','Registration guidance and business support.',4),
+  ('printing','Printing & Production','Print production and document support.',5),
+  ('marketing','Digital Growth','Marketing, content, advertising and SEO support.',6)
+on conflict (slug) do nothing;
