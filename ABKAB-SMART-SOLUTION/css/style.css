@@ -512,6 +512,14 @@ html,body{overflow-x:hidden}body{font-family:var(--font);font-size:16px;font-wei
   }
 }
 
+/* Managed hero media is displayed in full, without cropping uploaded artwork. */
+.hero-media.has-managed-media {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: var(--surface-alt);
+}
+
 /* Calm architectural motion on the landing page. Decorative layers stay
    behind content and use only paint/transform-friendly properties. */
 .page-home { position: relative; isolation: isolate; overflow-x: hidden; }
