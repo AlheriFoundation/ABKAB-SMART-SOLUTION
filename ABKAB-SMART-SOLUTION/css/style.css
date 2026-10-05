@@ -704,3 +704,11 @@ main#main-content > .section .category-grid[data-cms-list="services"] .service-c
   .footer-links, .footer-contact { justify-items: center; text-align: center; }
   .site-copy { padding-inline: 20px; font-size: .76rem; }
 }
+
+/* Center the opened mobile navigation items. */
+@media (max-width: 850px) {
+  .main-nav.open { text-align: center; }
+  .main-nav.open ul { align-items: center; }
+  .main-nav.open a { justify-content: center; text-align: center; }
+  .main-nav.open .nav-cta { width: min(100%, 260px); margin-inline: auto; }
+}
