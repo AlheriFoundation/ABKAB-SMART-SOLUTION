@@ -14,7 +14,7 @@ function nullableUuid(value, field) {
 }
 function safeUrl(value) {
   const url = text(value, 500000);
-  if (!url || /^(https?:\/\/|\/|[a-z0-9_./-]+\.(svg|jpe?g|png|webp))$/i.test(url)) return url;
+  if (!url || /^https?:\/\/[^\s]+$/i.test(url) || /^\/[a-z0-9_./-]+\.(svg|jpe?g|png|webp)$/i.test(url) || /^[a-z0-9_./-]+\.(svg|jpe?g|png|webp)$/i.test(url)) return url;
   throw new Error('Media URLs must use HTTP(S) or a safe local image path.');
 }
 function status(value) { return String(value).toUpperCase() === 'PUBLISHED' || value === true; }
@@ -53,6 +53,9 @@ function cmsView(resource, row) {
 }
 function cleanData(key, input) {
   const data = { ...input }; delete data.resource; delete data.type; delete data.created_at; delete data.updated_at;
+  // `id` is the database-generated UUID. It is used only as the PATCH/DELETE
+  // selector and must never be sent as an empty string on create.
+  delete data.id;
   if (key === 'media') {
     if (data.src && /^data:/i.test(data.src)) { if (!imageDataPattern.test(data.src) || data.src.length > maxDataUrlLength) throw new Error('Upload a JPG, PNG or WEBP image smaller than 5 MB.'); }
     else if (data.src !== undefined) safeUrl(data.src);
@@ -112,6 +115,9 @@ module.exports = async function handler(req, res) {
       return sendJson(res, 200, { ok: true });
     }
     if (!['POST', 'PATCH'].includes(req.method)) return sendJson(res, 405, { error: 'Method not allowed' }, { Allow: 'GET, POST, PATCH, DELETE' });
+    const updateId = req.method === 'PATCH' ? text(input.id, 80) : '';
+    if (req.method === 'PATCH' && !updateId) return sendJson(res, 400, { error: 'Missing item id.' });
+    if (req.method === 'PATCH' && !isUuid(updateId)) return sendJson(res, 400, { error: 'Invalid item identifier.' });
     const data = cleanData(resource, input);
     if (resource === 'media' && data.src && /^data:/i.test(data.src)) {
       const stored = await uploadDataUrl(data.src, data.section || data.category, data.title);
@@ -121,7 +127,7 @@ module.exports = async function handler(req, res) {
     }
     if (resource === 'portfolio') { data.is_featured = Boolean(data.featured); data.is_published = status(data.status); delete data.featured; delete data.status; }
     if (resource === 'services' || resource === 'settings') { data.is_published = status(data.status); delete data.status; }
-    if (req.method === 'PATCH') { const id = text(input.id, 80); if (!id) return sendJson(res, 400, { error: 'Missing item id.' }); if (!isUuid(id)) return sendJson(res, 400, { error: 'Invalid item identifier.' }); data.updated_at = new Date().toISOString(); const rows = await supabase(`${table}?id=eq.${encodeURIComponent(id)}&select=*`, { method: 'PATCH', headers: { 'content-type': 'application/json', Prefer: 'return=representation' }, body: JSON.stringify(data), operation: `update ${resource}` }); return rows.length ? sendJson(res, 200, { item: cmsView(resource, rows[0]) }) : sendJson(res, 404, { error: 'Item not found.' }); }
+    if (req.method === 'PATCH') { data.updated_at = new Date().toISOString(); const rows = await supabase(`${table}?id=eq.${encodeURIComponent(updateId)}&select=*`, { method: 'PATCH', headers: { 'content-type': 'application/json', Prefer: 'return=representation' }, body: JSON.stringify(data), operation: `update ${resource}` }); return rows.length ? sendJson(res, 200, { item: cmsView(resource, rows[0]) }) : sendJson(res, 404, { error: 'Item not found.' }); }
     const rows = await supabase(`${table}?select=*`, { method: 'POST', headers: { 'content-type': 'application/json', Prefer: 'return=representation' }, body: JSON.stringify(data), operation: `create ${resource}` });
     return sendJson(res, 201, { item: cmsView(resource, rows[0]) });
   } catch (error) {

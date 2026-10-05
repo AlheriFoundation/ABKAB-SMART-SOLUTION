@@ -105,10 +105,12 @@ document.addEventListener('DOMContentLoaded', function () {
     button.disabled = true;
     button.textContent = key === 'homepage' && data.status === 'PUBLISHED' ? 'Publishing…' : 'Saving…';
     setStatus(button.textContent, false);
+    var payload = Object.assign({ resource: key }, data);
+    if (!data.id) delete payload.id;
     return call('/api/admin-cms', {
       method: data.id ? 'PATCH' : 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(Object.assign({ resource: key }, data))
+      body: JSON.stringify(payload)
     }).then(function () {
       setStatus(data.status === 'PUBLISHED' ? 'Published successfully.' : 'Saved successfully.', false);
       return loadCms(key);

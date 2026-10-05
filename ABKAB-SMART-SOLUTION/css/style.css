@@ -541,6 +541,7 @@ html,body{overflow-x:hidden}body{font-family:var(--font);font-size:16px;font-wei
   .page-home::before, .page-home::after { animation: none; }
 }
 
+
 /* Services category rows: these cards have no icon column, so keep all copy in a readable text column. */
 main#main-content > .section .category-grid[data-cms-list="services"] .service-card {
   grid-template-columns: minmax(0, 1fr) auto;
