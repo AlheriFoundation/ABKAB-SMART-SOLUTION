@@ -24,7 +24,12 @@ document.addEventListener('DOMContentLoaded', function () {
       return response.text().then(function (text) {
         var data = {};
         try { data = text ? JSON.parse(text) : {}; } catch (_) { data = { error: text }; }
-        if (!response.ok) throw new Error(data.error || 'Request failed.');
+        if (!response.ok) {
+          var requestError = new Error(data.error || 'Request failed.');
+          requestError.status = response.status;
+          requestError.responseBody = data;
+          throw requestError;
+        }
         return data;
       });
     }).catch(function (error) {
@@ -66,11 +71,16 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function loadRequests() {
-    return call('/api/admin-requests').then(function (data) { requests = data.requests || []; renderRequests(); }).catch(function () {
-      setStatus('Unable to load requests. Please try again.', true);
-      requests = [];
+    return call('/api/admin-requests').then(function (data) {
+      if (!Array.isArray(data.requests)) throw new Error('The Admin service returned an invalid requests response.');
+      requests = data.requests;
       renderRequests();
-      throw new Error('request-load-failed');
+      return data;
+    }).catch(function (error) {
+      // Keep the server's real error visible; do not make a backend failure
+      // look like an empty, successfully loaded request list.
+      if (error.status !== 401) setStatus(error.message || 'Unable to load requests.', true);
+      throw error;
     });
   }
 
@@ -143,7 +153,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }).join('') || '<p class="form-status">No items yet.</p>';
   }
 
-  function start() { loginPanel.hidden = true; dashboard.hidden = false; loadRequests().catch(function () {}); }
+  function start() {
+    loginPanel.hidden = true;
+    dashboard.hidden = false;
+    loadRequests().catch(function () {});
+  }
 
   document.querySelectorAll('.admin-nav button').forEach(function (button) { button.addEventListener('click', function () { showPanel(button.dataset.panel); }); });
   document.getElementById('requestList').addEventListener('click', function (event) {
@@ -212,5 +226,15 @@ document.addEventListener('DOMContentLoaded', function () {
     call('/api/admin-logout', { method: 'POST' }).then(function () { window.location.href = '/admin.html'; }).catch(function (error) { button.disabled = false; button.textContent = 'Log Out'; setStatus(error.message || 'Logout failed. Please try again.', true); });
   });
 
-  loadRequests().then(start).catch(function () { loginPanel.hidden = false; dashboard.hidden = true; });
+  loadRequests().then(function () {
+    loginPanel.hidden = true;
+    dashboard.hidden = false;
+  }).catch(function (error) {
+    loginPanel.hidden = false;
+    dashboard.hidden = true;
+    if (error.status === 401) {
+      adminStatus.textContent = '';
+      adminStatus.className = 'form-status';
+    }
+  });
 });

@@ -33,7 +33,9 @@ function publicHomepage(rows) {
 function homepageRows(input) {
   const published = status(input.status);
   return sections.map((section_key) => {
-    const row = { section_key, is_published: published };
+    // PostgREST requires every object in a bulk insert/upsert array to have
+    // the same keys. Keep one complete table shape for every section row.
+    const row = { section_key, eyebrow: '', headline: '', description: '', primary_cta_text: '', primary_cta_url: '', secondary_cta_text: '', secondary_cta_url: '', content: '', image_id: null, is_published: published };
     if (section_key === 'hero') Object.assign(row, { eyebrow: text(input.eyebrow), headline: text(input.headline), description: text(input.body || input.description), primary_cta_text: text(input.primary_cta_text), primary_cta_url: text(input.primary_cta_link || input.primary_cta_url), secondary_cta_text: text(input.secondary_cta_text), secondary_cta_url: text(input.secondary_cta_link || input.secondary_cta_url), image_id: nullableUuid(input.image_id, 'Hero media ID') });
     if (section_key === 'positioning') row.content = text(input.positioning_statement);
     if (section_key === 'why_abkab') row.content = [text(input.why_heading), text(input.why_description)].filter(Boolean).join('\n');

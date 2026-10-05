@@ -512,6 +512,35 @@ html,body{overflow-x:hidden}body{font-family:var(--font);font-size:16px;font-wei
   }
 }
 
+/* Calm architectural motion on the landing page. Decorative layers stay
+   behind content and use only paint/transform-friendly properties. */
+.page-home { position: relative; isolation: isolate; overflow-x: hidden; }
+.page-home::before,
+.page-home::after { position: fixed; z-index: -1; pointer-events: none; content: ''; }
+.page-home::before {
+  inset: 0;
+  opacity: .38;
+  background-image: linear-gradient(rgba(24,90,219,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(24,90,219,.045) 1px, transparent 1px);
+  background-size: 54px 54px;
+  mask-image: linear-gradient(to bottom, black, transparent 78%);
+  animation: abkab-home-grid 30s linear infinite;
+}
+.page-home::after {
+  top: 12vh;
+  right: -10vw;
+  width: 42vw;
+  height: 42vw;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(24,90,219,.11), transparent 68%);
+  filter: blur(12px);
+  animation: abkab-home-glow 18s ease-in-out infinite alternate;
+}
+@keyframes abkab-home-grid { to { background-position: 54px 54px; } }
+@keyframes abkab-home-glow { to { transform: translate3d(-4vw, 5vh, 0) scale(1.08); } }
+@media (prefers-reduced-motion: reduce) {
+  .page-home::before, .page-home::after { animation: none; }
+}
+
 /* Services category rows: these cards have no icon column, so keep all copy in a readable text column. */
 main#main-content > .section .category-grid[data-cms-list="services"] .service-card {
   grid-template-columns: minmax(0, 1fr) auto;
@@ -714,4 +743,34 @@ main#main-content > .section .category-grid[data-cms-list="services"] .service-c
   .main-nav.open .nav-cta { width: min(100%, 260px); margin-inline: auto; }
   .main-nav { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-8px); transition: grid-template-rows .28s ease, opacity .22s ease, transform .28s ease, visibility 0s linear .28s; }
   .main-nav.open { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); transition: grid-template-rows .28s ease, opacity .22s ease, transform .28s ease; }
+  .nav-container { justify-content: space-between; }
+  .nav-container .brand { margin-inline: 0; }
+  .nav-container .nav-toggle { position: relative; right: auto; margin-left: auto; }
+}
+
+/* Focused mobile corrections for the existing page structures. */
+@media (max-width: 768px) {
+  .page-home .editorial-services a {
+    grid-template-columns: 38px minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    gap: 8px 12px;
+    align-items: start;
+    min-height: 0;
+    padding: 22px 0;
+  }
+  .page-home .editorial-services a > span { grid-column: 1; grid-row: 1; padding-top: 3px; }
+  .page-home .editorial-services a > h3 { grid-column: 2; grid-row: 1; line-height: 1.2; }
+  .page-home .editorial-services a > p { grid-column: 2; grid-row: 2; margin: 2px 0 0; max-width: 52ch; line-height: 1.6; }
+  .page-home .editorial-services a > i { grid-column: 2; grid-row: 3; justify-self: start; margin-top: 8px; }
+  .page-home .section-process .process-list.process-v2 { grid-template-columns: 1fr; }
+  .page-home .section-process .process-step,
+  .page-home .section-process .process-step:nth-child(odd),
+  .page-home .section-process .process-step:nth-child(even) { padding: 24px 0 !important; border-left: 0; border-right: 0; }
+  .page-home .section-process .process-step:last-child { border-bottom: 0; }
+  .page-home .section-process .process-step h3 { margin-top: 16px; }
+  .page-home .section-process .process-step p { margin-top: 10px; max-width: 42ch; }
+  .page-contact .contact-layout,
+  .page-contact .contact-form-layout { width: min(100% - 40px, 680px); }
+  .page-contact .quick-item { min-width: 0; padding-block: 18px; }
+  .page-contact .quick-item small { overflow-wrap: anywhere; }
 }
