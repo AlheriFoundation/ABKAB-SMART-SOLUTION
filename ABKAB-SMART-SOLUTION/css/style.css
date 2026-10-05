@@ -711,4 +711,6 @@ main#main-content > .section .category-grid[data-cms-list="services"] .service-c
   .main-nav.open ul { align-items: center; }
   .main-nav.open a { justify-content: center; text-align: center; }
   .main-nav.open .nav-cta { width: min(100%, 260px); margin-inline: auto; }
+  .main-nav { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-8px); transition: grid-template-rows .28s ease, opacity .22s ease, transform .28s ease, visibility 0s linear .28s; }
+  .main-nav.open { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); transition: grid-template-rows .28s ease, opacity .22s ease, transform .28s ease; }
 }
