@@ -160,7 +160,7 @@ create table if not exists public.homepage_content (
   created_at timestamptz not null default now(), updated_at timestamptz not null default now()
 );
 create table if not exists public.media_library (
-  id uuid primary key default gen_random_uuid(), title text not null default '', alt_text text not null default '', src text not null, type text not null default 'image', section text not null default 'GENERAL', status text not null default 'DRAFT' check (status in ('DRAFT','PUBLISHED')), created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+  id uuid primary key default gen_random_uuid(), title text not null default '', alt_text text not null default '', src text not null, type text not null default 'image', section text not null default 'GENERAL', status text not null default 'DRAFT' check (status in ('DRAFT','PUBLISHED')), display_order integer not null default 0, created_at timestamptz not null default now(), updated_at timestamptz not null default now()
 );
 create table if not exists public.portfolio_items (
   id uuid primary key default gen_random_uuid(), name text not null, category text not null default '', description text not null default '', cover_image text not null default '', additional_image text not null default '', project_url text not null default '', featured boolean not null default false, status text not null default 'DRAFT' check (status in ('DRAFT','PUBLISHED')), display_order integer not null default 0, created_at timestamptz not null default now(), updated_at timestamptz not null default now()
@@ -201,6 +201,7 @@ alter table public.media_library add column if not exists public_url text;
 alter table public.media_library add column if not exists media_type text not null default 'image';
 alter table public.media_library add column if not exists section_key text;
 alter table public.media_library add column if not exists is_active boolean not null default false;
+alter table public.media_library add column if not exists display_order integer not null default 0;
 alter table public.service_categories add column if not exists media_id uuid;
 alter table public.service_categories add column if not exists image text not null default '';
 alter table public.service_categories add column if not exists is_published boolean not null default true;

@@ -69,6 +69,7 @@ create table if not exists public.media_library (
   category text not null default 'general' check (category in ('hero','portfolio','services','company','general')),
   section_key text,
   is_active boolean not null default false,
+  display_order integer not null default 0,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -81,6 +82,7 @@ alter table public.media_library add column if not exists alt_text text not null
 alter table public.media_library add column if not exists category text not null default 'general';
 alter table public.media_library add column if not exists section_key text;
 alter table public.media_library add column if not exists is_active boolean not null default false;
+alter table public.media_library add column if not exists display_order integer not null default 0;
 alter table public.media_library add column if not exists src text not null default '';
 alter table public.media_library add column if not exists type text not null default 'image';
 alter table public.media_library add column if not exists section text not null default 'general';

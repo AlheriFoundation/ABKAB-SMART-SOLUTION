@@ -37,6 +37,12 @@ function homepageRows(input) {
   });
 }
 function mediaView(row) { return { ...row, src: row.public_url || '', type: row.media_type, section: (row.section_key || row.category || 'general').toUpperCase(), status: row.is_active ? 'PUBLISHED' : 'DRAFT' }; }
+function cmsView(resource, row) {
+  if (resource === 'media') return mediaView(row);
+  if (resource === 'portfolio') return { ...row, featured: row.is_featured, status: row.is_published ? 'PUBLISHED' : 'DRAFT' };
+  if (resource === 'services' || resource === 'settings') return { ...row, status: row.is_published ? 'PUBLISHED' : 'DRAFT' };
+  return row;
+}
 function cleanData(key, input) {
   const data = { ...input }; delete data.resource; delete data.type; delete data.created_at; delete data.updated_at;
   if (key === 'media') {
@@ -83,8 +89,9 @@ module.exports = async function handler(req, res) {
     if (!tables[resource]) return sendJson(res, 400, { error: 'Unknown CMS resource.' });
     const table = tables[resource];
     if (req.method === 'GET') {
-      const rows = await supabase(`${table}?select=*&order=display_order.asc,created_at.desc`, { method: 'GET', operation: `list ${resource}` });
-      return sendJson(res, 200, { items: resource === 'media' ? rows.map(mediaView) : rows });
+      const ordering = ['media', 'portfolio', 'services'].includes(resource) ? 'display_order.asc,created_at.desc' : 'created_at.desc';
+      const rows = await supabase(`${table}?select=*&order=${ordering}`, { method: 'GET', operation: `list ${resource}` });
+      return sendJson(res, 200, { items: rows.map(function (row) { return cmsView(resource, row); }) });
     }
     if (req.method === 'DELETE') {
       const id = text(input.id, 80); if (!id) return sendJson(res, 400, { error: 'Missing item id.' });
@@ -101,10 +108,10 @@ module.exports = async function handler(req, res) {
       data.file_name = data.file_name || text(data.src.split('/').pop() || 'image', 255); data.storage_path = data.storage_path || data.src; data.public_url = data.public_url || data.src; data.media_type = data.media_type || data.type || 'image'; data.category = text(data.category || 'general', 20).toLowerCase(); data.section_key = text(data.section || '', 80).toLowerCase() || null; data.is_active = status(data.status); delete data.src; delete data.type; delete data.section; delete data.status;
     }
     if (resource === 'portfolio') { data.is_featured = Boolean(data.featured); data.is_published = status(data.status); delete data.featured; delete data.status; }
-    if (resource === 'services') { data.is_published = status(data.status); delete data.status; }
-    if (req.method === 'PATCH') { const id = text(input.id, 80); if (!id) return sendJson(res, 400, { error: 'Missing item id.' }); data.updated_at = new Date().toISOString(); const rows = await supabase(`${table}?id=eq.${encodeURIComponent(id)}&select=*`, { method: 'PATCH', headers: { 'content-type': 'application/json', Prefer: 'return=representation' }, body: JSON.stringify(data), operation: `update ${resource}` }); return rows.length ? sendJson(res, 200, { item: resource === 'media' ? mediaView(rows[0]) : rows[0] }) : sendJson(res, 404, { error: 'Item not found.' }); }
+    if (resource === 'services' || resource === 'settings') { data.is_published = status(data.status); delete data.status; }
+    if (req.method === 'PATCH') { const id = text(input.id, 80); if (!id) return sendJson(res, 400, { error: 'Missing item id.' }); data.updated_at = new Date().toISOString(); const rows = await supabase(`${table}?id=eq.${encodeURIComponent(id)}&select=*`, { method: 'PATCH', headers: { 'content-type': 'application/json', Prefer: 'return=representation' }, body: JSON.stringify(data), operation: `update ${resource}` }); return rows.length ? sendJson(res, 200, { item: cmsView(resource, rows[0]) }) : sendJson(res, 404, { error: 'Item not found.' }); }
     const rows = await supabase(`${table}?select=*`, { method: 'POST', headers: { 'content-type': 'application/json', Prefer: 'return=representation' }, body: JSON.stringify(data), operation: `create ${resource}` });
-    return sendJson(res, 201, { item: resource === 'media' ? mediaView(rows[0]) : rows[0] });
+    return sendJson(res, 201, { item: cmsView(resource, rows[0]) });
   } catch (error) {
     console.error('Admin CMS API failed', { operation: error.operation || 'cms', message: error.message, code: error.code || null });
     return sendJson(res, error.status >= 400 && error.status < 600 ? error.status : 500, { error: error.message || 'CMS service is temporarily unavailable.' });

@@ -167,13 +167,13 @@ document.addEventListener('DOMContentLoaded', function () {
     button.addEventListener('click', function () {
       var open = nav.classList.toggle('open');
       button.setAttribute('aria-expanded', String(open));
-      button.querySelector('i').className = open ? 'fas fa-times' : 'fas fa-bars';
+      var icon = button.querySelector('i'); if (icon) icon.className = open ? 'fas fa-times' : 'fas fa-bars'; else button.textContent = open ? '×' : '☰';
     });
     nav.querySelectorAll('a').forEach(function (link) {
       link.addEventListener('click', function () {
         nav.classList.remove('open');
         button.setAttribute('aria-expanded', 'false');
-        button.querySelector('i').className = 'fas fa-bars';
+        var icon = button.querySelector('i'); if (icon) icon.className = 'fas fa-bars'; else button.textContent = '☰';
       });
     });
   });
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var button = document.querySelector('[aria-controls="' + nav.id + '"]');
         if (button) {
           button.setAttribute('aria-expanded', 'false');
-          button.querySelector('i').className = 'fas fa-bars';
+          var icon = button.querySelector('i'); if (icon) icon.className = 'fas fa-bars'; else button.textContent = '☰';
           button.focus();
         }
       });
