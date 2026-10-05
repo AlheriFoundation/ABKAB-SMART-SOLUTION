@@ -6,6 +6,10 @@ function text(value, maxLength) {
   return String(value == null ? '' : value).trim().slice(0, maxLength || 5000);
 }
 
+function isUuid(value) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
 function shapeRequest(row) {
   return {
     ...row,
@@ -26,20 +30,22 @@ module.exports = async function handler(req, res) {
 
     const input = body(req);
     if (!input) return sendJson(res, 400, { error: 'Request body must be valid JSON.' });
-    const requestId = text(input.requestId || input.trackingNumber, 40).toUpperCase();
+    const identifier = text(input.requestId || input.trackingNumber, 80);
+    const requestId = identifier.toUpperCase();
     const status = normalizeStatus(input.status);
     if (input.adminNotes !== undefined && typeof input.adminNotes !== 'string') return sendJson(res, 400, { error: 'Admin notes must be text.' });
     if (input.customerNote !== undefined && typeof input.customerNote !== 'string') return sendJson(res, 400, { error: 'Customer note must be text.' });
     const adminNotes = input.adminNotes === undefined ? undefined : text(input.adminNotes, 5000);
     const customerNote = input.customerNote === undefined ? undefined : text(input.customerNote, 5000);
 
-    if (!/^ABKAB-\d{4}-\d{6}$/.test(requestId)) return sendJson(res, 400, { error: 'Invalid tracking number.' });
+    if (!isUuid(identifier) && !/^ABKAB-\d{4}-\d{6}$/.test(requestId)) return sendJson(res, 400, { error: 'Invalid request identifier.' });
     if (!statuses.includes(status)) return sendJson(res, 400, { error: 'Invalid status.' });
     const update = { status, updated_at: new Date().toISOString() };
     if (adminNotes !== undefined) update.admin_notes = adminNotes;
     if (customerNote !== undefined) update.customer_note = customerNote;
 
-    const rows = await supabase(`requests?request_id=eq.${encodeURIComponent(requestId)}&select=*`, {
+    const lookup = isUuid(identifier) ? `id=eq.${encodeURIComponent(identifier)}` : `request_id=eq.${encodeURIComponent(requestId)}`;
+    const rows = await supabase(`requests?${lookup}&select=*`, {
       method: 'PATCH',
       operation: 'update admin request',
       headers: { 'content-type': 'application/json', Prefer: 'return=representation' },

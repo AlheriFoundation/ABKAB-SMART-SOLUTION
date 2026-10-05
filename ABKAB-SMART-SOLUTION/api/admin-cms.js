@@ -6,6 +6,12 @@ const maxDataUrlLength = 5 * 1024 * 1024 * 1.38;
 const imageDataPattern = /^data:image\/(jpeg|jpg|png|webp);base64,[a-z0-9+/=]+$/i;
 
 function text(value, max) { return String(value == null ? '' : value).trim().slice(0, max || 5000); }
+function isUuid(value) { return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value || '')); }
+function nullableUuid(value, field) {
+  if (value === undefined || value === null || value === '') return null;
+  if (!isUuid(value)) throw new Error(`${field} must be a valid media ID.`);
+  return value;
+}
 function safeUrl(value) {
   const url = text(value, 500000);
   if (!url || /^(https?:\/\/|\/|[a-z0-9_./-]+\.(svg|jpe?g|png|webp))$/i.test(url)) return url;
@@ -28,7 +34,7 @@ function homepageRows(input) {
   const published = status(input.status);
   return sections.map((section_key) => {
     const row = { section_key, is_published: published };
-    if (section_key === 'hero') Object.assign(row, { eyebrow: text(input.eyebrow), headline: text(input.headline), description: text(input.body || input.description), primary_cta_text: text(input.primary_cta_text), primary_cta_url: text(input.primary_cta_link || input.primary_cta_url), secondary_cta_text: text(input.secondary_cta_text), secondary_cta_url: text(input.secondary_cta_link || input.secondary_cta_url), image_id: input.image_id || null });
+    if (section_key === 'hero') Object.assign(row, { eyebrow: text(input.eyebrow), headline: text(input.headline), description: text(input.body || input.description), primary_cta_text: text(input.primary_cta_text), primary_cta_url: text(input.primary_cta_link || input.primary_cta_url), secondary_cta_text: text(input.secondary_cta_text), secondary_cta_url: text(input.secondary_cta_link || input.secondary_cta_url), image_id: nullableUuid(input.image_id, 'Hero media ID') });
     if (section_key === 'positioning') row.content = text(input.positioning_statement);
     if (section_key === 'why_abkab') row.content = [text(input.why_heading), text(input.why_description)].filter(Boolean).join('\n');
     if (section_key === 'process') row.content = [text(input.process_heading), text(input.process_description)].filter(Boolean).join('\n');
@@ -52,6 +58,9 @@ function cleanData(key, input) {
   ['name','category','description','title','alt_text','project_url','section','slug','image'].forEach((field) => { if (data[field] !== undefined) data[field] = text(data[field], 5000); });
   if (data.project_url) data.project_url = safeUrl(data.project_url);
   if (data.cover_image) data.cover_image = safeUrl(data.cover_image);
+  ['image_id', 'media_id', 'cover_media_id', 'additional_media_id'].forEach((field) => {
+    if (data[field] !== undefined) data[field] = nullableUuid(data[field], field);
+  });
   if (data.status !== undefined) data.status = status(data.status);
   if (data.display_order !== undefined) data.display_order = Math.max(0, Math.min(9999, Number(data.display_order) || 0));
   return data;
@@ -95,6 +104,7 @@ module.exports = async function handler(req, res) {
     }
     if (req.method === 'DELETE') {
       const id = text(input.id, 80); if (!id) return sendJson(res, 400, { error: 'Missing item id.' });
+      if (!isUuid(id)) return sendJson(res, 400, { error: 'Invalid item identifier.' });
       if (resource === 'media') { const existing = await supabase(`${table}?id=eq.${encodeURIComponent(id)}&select=storage_path`, { method: 'GET', operation: 'read media before delete' }); if (existing[0]) await deleteStoredObject(existing[0].storage_path); }
       await supabase(`${table}?id=eq.${encodeURIComponent(id)}`, { method: 'DELETE', operation: `delete ${resource}` });
       return sendJson(res, 200, { ok: true });
@@ -109,7 +119,7 @@ module.exports = async function handler(req, res) {
     }
     if (resource === 'portfolio') { data.is_featured = Boolean(data.featured); data.is_published = status(data.status); delete data.featured; delete data.status; }
     if (resource === 'services' || resource === 'settings') { data.is_published = status(data.status); delete data.status; }
-    if (req.method === 'PATCH') { const id = text(input.id, 80); if (!id) return sendJson(res, 400, { error: 'Missing item id.' }); data.updated_at = new Date().toISOString(); const rows = await supabase(`${table}?id=eq.${encodeURIComponent(id)}&select=*`, { method: 'PATCH', headers: { 'content-type': 'application/json', Prefer: 'return=representation' }, body: JSON.stringify(data), operation: `update ${resource}` }); return rows.length ? sendJson(res, 200, { item: cmsView(resource, rows[0]) }) : sendJson(res, 404, { error: 'Item not found.' }); }
+    if (req.method === 'PATCH') { const id = text(input.id, 80); if (!id) return sendJson(res, 400, { error: 'Missing item id.' }); if (!isUuid(id)) return sendJson(res, 400, { error: 'Invalid item identifier.' }); data.updated_at = new Date().toISOString(); const rows = await supabase(`${table}?id=eq.${encodeURIComponent(id)}&select=*`, { method: 'PATCH', headers: { 'content-type': 'application/json', Prefer: 'return=representation' }, body: JSON.stringify(data), operation: `update ${resource}` }); return rows.length ? sendJson(res, 200, { item: cmsView(resource, rows[0]) }) : sendJson(res, 404, { error: 'Item not found.' }); }
     const rows = await supabase(`${table}?select=*`, { method: 'POST', headers: { 'content-type': 'application/json', Prefer: 'return=representation' }, body: JSON.stringify(data), operation: `create ${resource}` });
     return sendJson(res, 201, { item: cmsView(resource, rows[0]) });
   } catch (error) {
