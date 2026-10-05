@@ -418,3 +418,29 @@ body::before, body::after, .hero::after, .page-hero::after, .cta-band::before { 
   .field input, .field select, .field textarea { min-height: 50px; }
   .site-footer { padding-bottom: 28px; }
 }
+
+/* Homepage spacing refinement */
+.page-home .section { padding-block: clamp(64px, 7.5vw, 104px); }
+.page-home .section-heading { margin-bottom: clamp(32px, 4vw, 46px); }
+.page-home .hero { padding-block: clamp(96px, 11vw, 156px); }
+.page-home .hero-grid { gap: clamp(44px, 6vw, 78px); }
+.page-home .hero-copy { margin-top: 22px; }
+.page-home .hero-actions { margin-top: 30px; }
+.page-home .service-card { padding-block: 24px; }
+.page-home .portfolio-preview { gap: 28px; }
+.page-home .cta-band { padding-block: clamp(58px, 7vw, 88px); }
+
+@media (max-width: 850px) {
+  .page-home .hero { padding-block: 82px 76px; }
+  .page-home .section { padding-block: 68px; }
+}
+
+@media (max-width: 560px) {
+  .page-home .hero { padding-block: 68px 62px; }
+  .page-home .section { padding-block: 52px; }
+  .page-home .section-heading { margin-bottom: 30px; }
+  .page-home .hero-grid { gap: 34px; }
+  .page-home .service-card { padding-block: 22px; }
+  .page-home .portfolio-preview { gap: 24px; }
+  .page-home .cta-band { padding-block: 54px; }
+}
