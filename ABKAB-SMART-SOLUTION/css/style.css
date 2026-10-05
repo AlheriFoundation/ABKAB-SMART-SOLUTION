@@ -376,6 +376,66 @@ html,body{overflow-x:hidden}body{font-family:var(--font);font-size:16px;font-wei
 @media(max-width:760px){.admin-sidebar #logoutButton{grid-column:1/-1;width:100%}}
 @media (prefers-reduced-motion: reduce) { .solution-window { animation: none !important; } }
 
+/* Services category rows: these cards have no icon column, so keep all copy in a readable text column. */
+main#main-content > .section .category-grid[data-cms-list="services"] .service-card {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  column-gap: clamp(24px, 4vw, 56px);
+  row-gap: 0;
+  align-items: start;
+}
+
+main#main-content > .section .category-grid[data-cms-list="services"] .service-card h2 {
+  grid-column: 1;
+  grid-row: 1;
+  max-width: 24ch;
+  margin: 0;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+main#main-content > .section .category-grid[data-cms-list="services"] .service-card p {
+  grid-column: 1;
+  grid-row: 2;
+  max-width: 62ch;
+  margin: 9px 0 0;
+  line-height: 1.65;
+  letter-spacing: 0;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+main#main-content > .section .category-grid[data-cms-list="services"] .service-card .text-link {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+}
+
+@media (max-width: 560px) {
+  main#main-content > .section .category-grid[data-cms-list="services"] .service-card {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    row-gap: 0;
+    padding: 24px 0;
+  }
+
+  main#main-content > .section .category-grid[data-cms-list="services"] .service-card h2,
+  main#main-content > .section .category-grid[data-cms-list="services"] .service-card p,
+  main#main-content > .section .category-grid[data-cms-list="services"] .service-card .text-link {
+    grid-column: 1;
+  }
+
+  main#main-content > .section .category-grid[data-cms-list="services"] .service-card h2 { grid-row: 1; }
+  main#main-content > .section .category-grid[data-cms-list="services"] .service-card p { grid-row: 2; }
+  main#main-content > .section .category-grid[data-cms-list="services"] .service-card .text-link {
+    grid-row: 3;
+    justify-self: start;
+    margin-top: 16px;
+  }
+}
+
 .page-services .page-hero h1,
 .page-portfolio .page-hero h1,
 .page-about .page-hero h1 { max-width: 11ch; }
