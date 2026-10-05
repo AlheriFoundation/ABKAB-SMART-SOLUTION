@@ -352,3 +352,36 @@ body::before, body::after, .hero::after, .page-hero::after, .cta-band::before { 
   .footer-grid { grid-template-columns: 1fr; gap: 34px; padding-bottom: 52px; }
 }
 @media (prefers-reduced-motion: reduce) { .solution-window { animation: none !important; } }
+
+.page-services .page-hero h1,
+.page-portfolio .page-hero h1,
+.page-about .page-hero h1 { max-width: 11ch; }
+.page-services .service-card h2 { font-size: clamp(1.25rem, 2.4vw, 1.8rem); text-transform: none; }
+.page-services .service-card .service-examples { font-size: .78rem; letter-spacing: .01em; }
+.page-services .service-card .service-icon { border: 1px solid var(--border); }
+.page-services .service-card:hover .service-icon { border-color: var(--primary); background: var(--primary); color: #fff; transform: none; }
+
+.page-portfolio .portfolio-preview { display: grid; grid-template-columns: 1fr; gap: 0; }
+.page-portfolio .project-card { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr); gap: clamp(28px, 6vw, 92px); align-items: end; padding: 0 0 56px; margin-bottom: 56px; border-bottom: 1px solid var(--border); }
+.page-portfolio .project-card:last-child { margin-bottom: 0; }
+.page-portfolio .project-card img { aspect-ratio: 1.7; }
+.page-portfolio .project-info { padding: 0 0 10px; }
+.page-portfolio .project-info h2 { max-width: 12ch; font-size: clamp(1.7rem, 3.4vw, 3.2rem); line-height: .98; }
+.page-portfolio .project-info p { max-width: 34ch; margin-top: 16px; }
+
+.page-service .page-hero h1 { max-width: 10ch; }
+.page-service .service-detail-grid { align-items: start; }
+.page-service .about-panel { min-height: 330px; }
+.page-request .request-hero-grid { align-items: end; }
+.page-request .request-hero h1 { max-width: 10ch; }
+.page-request .request-form { max-width: 860px; }
+.page-request .request-layout { grid-template-columns: minmax(0, 1fr) 240px; gap: clamp(28px, 6vw, 72px); }
+.page-track-request .portal-narrow { max-width: 760px; }
+.page-track-request .contact-form { padding-inline: 0; }
+.page-track-request .request-result { padding-inline: 0; }
+
+@media (max-width: 850px) {
+  .page-portfolio .project-card { grid-template-columns: 1fr; gap: 20px; padding-bottom: 40px; margin-bottom: 40px; }
+  .page-portfolio .project-info { padding: 0; }
+  .page-request .request-layout { grid-template-columns: 1fr; }
+}
