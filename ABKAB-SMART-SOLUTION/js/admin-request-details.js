@@ -1,0 +1,30 @@
+(function () {
+  'use strict';
+  function esc(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, function (character) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]; }); }
+  function label(value) { return String(value || '').replace(/[_-]+/g, ' ').replace(/\b\w/g, function (character) { return character.toUpperCase(); }); }
+  function field(name, value) { return '<div class="detail-field"><dt>' + esc(label(name)) + '</dt><dd>' + esc(value || 'Not provided').replace(/\n/g, '<br>') + '</dd></div>'; }
+  function attachmentSection(attachments) {
+    if (!Array.isArray(attachments) || !attachments.length) return '<h3>Attachment</h3><p class="form-status">No attachment</p>';
+    return '<h3>Attachments</h3><div class="request-attachments">' + attachments.map(function (item, index) { return '<article class="request-attachment" data-attachment-path="' + esc(item.storage_path) + '"><div><strong>' + esc(item.file_name || 'Attachment ' + (index + 1)) + '</strong><small>' + esc(item.media_type || 'File') + ' · ' + (item.file_size ? Math.ceil(item.file_size / 1024) + ' KB' : 'Size unavailable') + '</small></div><div class="attachment-actions"><span class="attachment-status">Preparing secure link…</span></div></article>'; }).join('') + '</div>';
+  }
+  function openModal(request) {
+    var existing = document.querySelector('.admin-request-view-modal'); if (existing) existing.remove();
+    var details = request.request_details || {};
+    var keys = ['request_id','customer_name','phone','email','service_type','service_category','description','status','priority','source','utm_source','utm_medium','utm_campaign','created_at','updated_at'].filter(function (key) { return request[key] !== undefined && request[key] !== null && request[key] !== ''; });
+    var primary = keys.map(function (key) { return field(key, key.indexOf('_at') > -1 && request[key] ? new Date(request[key]).toLocaleString() : request[key]); }).join('');
+    var all = Object.keys(details).map(function (key) { return field(key, details[key]); }).join('');
+    var html = '<div class="request-details-modal admin-request-view-modal" role="dialog" aria-modal="true" aria-label="View request"><div class="request-details-panel"><button class="details-close" type="button" aria-label="Close request details">&times;</button><span class="eyebrow">Read-only request view</span><h2>' + esc(request.request_id) + '</h2><h3>Request information</h3><dl class="details-grid">' + primary + '</dl><h3>All submitted information</h3><dl class="details-grid">' + (all || field('Request details','Not provided')) + '</dl>' + attachmentSection(request.attachments) + '<h3>Admin notes</h3><dl class="details-grid">' + field('Customer-facing note', request.customer_note) + field('Private admin note', request.admin_notes) + '</dl></div></div>';
+    document.body.insertAdjacentHTML('beforeend', html); var modal = document.body.lastElementChild;
+    function close() { modal.remove(); }
+    modal.querySelector('.details-close').addEventListener('click', close); modal.addEventListener('click', function (event) { if (event.target === modal) close(); });
+    modal.querySelectorAll('[data-attachment-path]').forEach(function (item) { var path = item.dataset.attachmentPath, actions = item.querySelector('.attachment-actions'), status = item.querySelector('.attachment-status'); fetch('/api/admin-request-attachment', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ path: path }) }).then(function (response) { return response.json().then(function (data) { if (!response.ok) throw new Error(data.error || 'Attachment unavailable.'); return data.url; }); }).then(function (url) { var isImage = /\.(jpg|jpeg|png|webp)(\?|$)/i.test(path) || /image\//i.test(item.textContent); actions.innerHTML = (isImage ? '<a class="attachment-preview" href="' + esc(url) + '" target="_blank" rel="noopener"><img src="' + esc(url) + '" alt="' + esc(item.querySelector('strong').textContent) + '"></a>' : '') + '<a class="btn btn-secondary" href="' + esc(url) + '" target="_blank" rel="noopener">Open / Download</a>'; }).catch(function (error) { status.textContent = error.message || 'Attachment unavailable.'; status.className = 'attachment-status error'; }); });
+    document.addEventListener('keydown', function handler(event) { if (event.key === 'Escape' && document.body.contains(modal)) { close(); document.removeEventListener('keydown', handler); } });
+  }
+  function init() {
+    var list = document.getElementById('requestList'); if (!list) return;
+    function addViewButtons() { list.querySelectorAll('.admin-request').forEach(function (card) { if (card.querySelector('[data-view-request]')) return; var update = card.querySelector('[data-save-request]'); if (!update) return; var button = document.createElement('button'); button.type = 'button'; button.className = 'btn btn-secondary'; button.textContent = 'View'; button.dataset.viewRequest = update.dataset.saveRequest; update.parentNode.insertBefore(button, update); }); }
+    new MutationObserver(addViewButtons).observe(list, { childList: true, subtree: true }); addViewButtons();
+    list.addEventListener('click', function (event) { var button = event.target.closest('[data-view-request]'); if (!button) return; button.disabled = true; fetch('/api/admin-requests', { credentials: 'same-origin' }).then(function (response) { return response.json().then(function (data) { if (!response.ok) throw new Error('Unable to load requests. Please try again.'); return (data.requests || []).find(function (request) { return request.request_id === button.dataset.viewRequest; }); }); }).then(function (request) { if (!request) throw new Error('Request could not be found.'); openModal(request); }).catch(function () { alert('Unable to load request details. Please try again.'); }).finally(function () { button.disabled = false; }); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+}());

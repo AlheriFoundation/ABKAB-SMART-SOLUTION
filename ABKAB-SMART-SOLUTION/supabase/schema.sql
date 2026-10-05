@@ -41,6 +41,7 @@ alter table public.requests add column if not exists created_at timestamptz not 
 alter table public.requests add column if not exists updated_at timestamptz not null default now();
 alter table public.requests add column if not exists admin_notes text not null default '';
 alter table public.requests add column if not exists customer_note text not null default '';
+alter table public.requests add column if not exists attachments jsonb not null default '[]'::jsonb;
 
 with numbered_requests as (
   select id,
@@ -182,3 +183,35 @@ insert into public.service_categories (slug, name, description, display_order) v
   ('printing','Printing & Production','Print production and document support.',5),
   ('marketing','Digital Growth','Marketing, content, advertising and SEO support.',6)
 on conflict (slug) do nothing;
+
+-- CMS section/storage compatibility for installations that execute this file directly.
+alter table public.homepage_content add column if not exists section_key text;
+alter table public.homepage_content add column if not exists description text not null default '';
+alter table public.homepage_content add column if not exists primary_cta_url text not null default '';
+alter table public.homepage_content add column if not exists secondary_cta_url text not null default '';
+alter table public.homepage_content add column if not exists content text not null default '';
+alter table public.homepage_content add column if not exists image_id uuid;
+alter table public.homepage_content add column if not exists is_published boolean not null default false;
+update public.homepage_content set section_key = 'hero', description = body, primary_cta_url = primary_cta_link, secondary_cta_url = secondary_cta_link, is_published = (status = 'PUBLISHED') where section_key is null;
+create unique index if not exists homepage_content_section_key_idx on public.homepage_content(section_key);
+create table if not exists public.portfolio_projects (id uuid primary key default gen_random_uuid(), name text not null, category text not null default '', description text not null default '', cover_image text not null default '', additional_image text not null default '', cover_media_id uuid, additional_media_id uuid, project_url text not null default '', is_featured boolean not null default false, is_published boolean not null default false, display_order integer not null default 0, created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+alter table public.media_library add column if not exists file_name text not null default '';
+alter table public.media_library add column if not exists storage_path text not null default '';
+alter table public.media_library add column if not exists public_url text;
+alter table public.media_library add column if not exists media_type text not null default 'image';
+alter table public.media_library add column if not exists section_key text;
+alter table public.media_library add column if not exists is_active boolean not null default false;
+alter table public.service_categories add column if not exists media_id uuid;
+alter table public.service_categories add column if not exists image text not null default '';
+alter table public.service_categories add column if not exists is_published boolean not null default true;
+alter table public.service_categories add column if not exists display_order integer not null default 0;
+insert into storage.buckets (id, name, public) values ('abkab-media','abkab-media',true) on conflict (id) do update set public = true;
+insert into storage.buckets (id, name, public) values ('abkab-request-attachments','abkab-request-attachments',false) on conflict (id) do update set public = false;
+alter table public.homepage_content enable row level security; alter table public.media_library enable row level security; alter table public.portfolio_projects enable row level security; alter table public.service_categories enable row level security;
+drop policy if exists abkab_public_homepage_read on public.homepage_content; create policy abkab_public_homepage_read on public.homepage_content for select to anon, authenticated using (is_published = true);
+drop policy if exists abkab_public_media_read on public.media_library; create policy abkab_public_media_read on public.media_library for select to anon, authenticated using (is_active = true);
+drop policy if exists abkab_public_portfolio_read on public.portfolio_projects; create policy abkab_public_portfolio_read on public.portfolio_projects for select to anon, authenticated using (is_published = true);
+drop policy if exists abkab_public_services_read on public.service_categories; create policy abkab_public_services_read on public.service_categories for select to anon, authenticated using (is_published = true);
+insert into public.homepage_content (section_key, content, is_published) values ('positioning','Practical technology, digital experiences and business systems for organisations ready to work better.',true),('why_abkab','A better way to move work forward.\nClear thinking, reliable delivery and technology that earns its place in the business.',true),('process','A clear route from need to delivery.\nWe keep the work focused, visible and useful at every stage.',true),('final_cta','Have a project in mind?\nTell us what needs to work better. We will help define the next step.',true) on conflict (section_key) do nothing;
+drop policy if exists abkab_public_media_objects_read on storage.objects; create policy abkab_public_media_objects_read on storage.objects for select to anon, authenticated using (bucket_id = 'abkab-media');
+notify pgrst, 'reload schema';

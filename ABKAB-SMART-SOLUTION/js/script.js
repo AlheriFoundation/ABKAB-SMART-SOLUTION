@@ -552,7 +552,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return '<label class="check-option" for="' + itemId + '"><input id="' + itemId + '" type="checkbox" name="' + esc(field.name) + '" value="' + esc(option) + '"> <span>' + esc(option) + '</span></label>';
       }).join('') + '</div>';
     } else if (field.type === 'file') {
-      html += '<input id="' + field.id + '" name="' + esc(field.name) + '" type="file" accept="' + esc(field.accept) + '" data-max-size="5242880" data-empty-text="JPG, JPEG, PNG or PDF. Maximum 5 MB."><div class="file-meta" id="' + field.id + 'Meta">JPG, JPEG, PNG or PDF. Maximum 5 MB.</div>';
+      html += '<input id="' + field.id + '" name="' + esc(field.name) + '" type="file" accept="' + esc(field.accept) + '" data-max-size="3670016" data-empty-text="JPG, JPEG, PNG or PDF. Maximum 3.5 MB."><div class="file-meta" id="' + field.id + 'Meta">JPG, JPEG, PNG or PDF. Maximum 3.5 MB.</div>';
     } else {
       html += '<input id="' + field.id + '" name="' + esc(field.name) + '" type="' + esc(field.inputType || 'text') + '" ' + (field.min ? 'min="' + esc(field.min) + '"' : '') + ' ' + (field.placeholder ? 'placeholder="' + esc(field.placeholder) + '"' : '') + ' ' + (field.required ? 'required' : '') + '>';
     }
@@ -598,6 +598,14 @@ document.addEventListener('DOMContentLoaded', function () {
         return data;
       });
     });
+  }
+
+  function uploadRequestAttachments(form, statusElement) {
+    var inputs = Array.prototype.filter.call(form.querySelectorAll('input[type="file"]'), function (input) { return input.files && input.files[0]; });
+    if (!inputs.length) return Promise.resolve([]);
+    function read(file) { return new Promise(function (resolve, reject) { var reader = new FileReader(); reader.onload = function () { resolve(reader.result); }; reader.onerror = function () { reject(new Error('The selected attachment could not be read.')); }; reader.readAsDataURL(file); }); }
+    statusElement.textContent = 'Uploading attachment securely...';
+    return Promise.all(inputs.map(function (input) { var file = input.files[0]; return read(file).then(function (dataUrl) { return postJson('/api/upload-request-attachment', { fileName: file.name, contentType: file.type, size: file.size, dataUrl: dataUrl }); }).then(function (data) { return data.attachment; }); }));
   }
 
   function collectFormDetails(form) {
@@ -777,10 +785,10 @@ document.addEventListener('DOMContentLoaded', function () {
       requestStatus.textContent = 'Saving your request securely...';
       requestStatus.className = 'form-status';
       var details = collectFormDetails(requestForm);
-      postJson('/api/submit-request', {
+      uploadRequestAttachments(requestForm, requestStatus).then(function (attachments) { requestStatus.textContent = 'Saving your request securely...'; return postJson('/api/submit-request', {
         serviceType: config.serviceName, customerName: requestValue('requestName'), phone: requestValue('requestPhone'),
-        email: requestValue('requestEmail'), preferredContactMethod: requestValue('contactMethod'), location: requestValue('requestLocation'), address: requestValue('requestAddress'), state: requestValue('requestState'), lga: requestValue('requestLga'), requestDetails: details
-      }).then(function (data) {
+        email: requestValue('requestEmail'), preferredContactMethod: requestValue('contactMethod'), location: requestValue('requestLocation'), address: requestValue('requestAddress'), state: requestValue('requestState'), lga: requestValue('requestLga'), requestDetails: details, attachments: attachments
+      }); }).then(function (data) {
         var tracking = {
           trackingNumber: data.trackingNumber || data.requestId,
           customerName: data.customerName,

@@ -61,6 +61,15 @@ function requestPayload(input) {
   };
 }
 
+function attachmentPayload(value) {
+  if (value === undefined) return [];
+  if (!Array.isArray(value) || value.length > 5) throw new Error('Invalid attachment data.');
+  return value.map((item) => {
+    if (!item || typeof item !== 'object' || typeof item.storage_path !== 'string' || !/^(pending|requests)\/[a-zA-Z0-9._/-]+$/.test(item.storage_path) || item.storage_path.includes('..')) throw new Error('Invalid attachment reference.');
+    return { file_name: text(item.file_name, 255), storage_path: item.storage_path, media_type: text(item.media_type, 100), file_size: Math.max(0, Math.min(Number(item.file_size) || 0, 5000000)), uploaded_at: text(item.uploaded_at, 80) || new Date().toISOString() };
+  });
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method not allowed' }, { Allow: 'POST' });
   try {
@@ -68,6 +77,7 @@ module.exports = async function handler(req, res) {
     if (!input) return sendJson(res, 400, { error: 'Request body must be valid JSON.' });
     if (!input.requestDetails || typeof input.requestDetails !== 'object' || Array.isArray(input.requestDetails)) return sendJson(res, 400, { error: 'Please complete all required fields.' });
     const payload = requestPayload(input);
+    const attachments = attachmentPayload(input.attachments);
     const required = [payload.customerName, payload.phone, payload.email, payload.preferredContactMethod, payload.serviceRequested];
     if (required.some((value) => !value)) return sendJson(res, 400, { error: 'Please complete all required fields.' });
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) return sendJson(res, 400, { error: 'Please enter a valid email address.' });
@@ -86,6 +96,7 @@ module.exports = async function handler(req, res) {
       state: payload.state,
       lga: payload.lga,
       request_details: payload.requestDetails,
+      attachments,
       status: normalizeStatus('PENDING'),
       admin_notes: '',
       customer_note: ''
@@ -135,6 +146,7 @@ module.exports = async function handler(req, res) {
     });
   } catch (error) {
     console.error('Submit request API failed', { operation: error.operation || 'submit request', message: error.message, status: error.status || 500, responseBody: error.responseBody || null, code: error.code || null });
+    if (/attachment/i.test(error.message || '')) return sendJson(res, 400, { error: error.message });
     if (error.code === '23514' || /request_id|check constraint/i.test(error.message || '')) return sendJson(res, 503, { error: 'The request system needs its database migration applied before submissions can be saved.' });
     if (error.code === '42703' || error.code === '42P01' || /column .* does not exist|relation .* does not exist/i.test(error.message || '')) return sendJson(res, 503, { error: 'The requests table is not ready. Please apply the Supabase database schema before submitting.' });
     return sendJson(res, 500, { error: 'We could not save your request. Please try again.' });
