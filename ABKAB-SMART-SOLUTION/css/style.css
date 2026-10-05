@@ -601,7 +601,8 @@ html,body{overflow-x:hidden}body{font-family:var(--font);font-size:16px;font-wei
    behind content and use only paint/transform-friendly properties. */
 .page-home { position: relative; isolation: isolate; overflow-x: hidden; }
 .page-home::before,
-.page-home::after { position: fixed; z-index: -1; pointer-events: none; content: ''; }
+.page-home::after { position: fixed; z-index: 0; pointer-events: none; content: ''; }
+.page-home > * { position: relative; z-index: 1; }
 .page-home::before {
   inset: 0;
   opacity: .38;
