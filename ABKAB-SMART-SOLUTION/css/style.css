@@ -376,6 +376,52 @@ html,body{overflow-x:hidden}body{font-family:var(--font);font-size:16px;font-wei
 @media(max-width:760px){.admin-sidebar #logoutButton{grid-column:1/-1;width:100%}}
 @media (prefers-reduced-motion: reduce) { .solution-window { animation: none !important; } }
 
+/* Services mobile rhythm: keep category copy in one readable column through tablet width. */
+@media (max-width: 768px) {
+  body:has(.category-grid[data-cms-list="services"]) #main-content > .page-hero .container,
+  body:has(.category-grid[data-cms-list="services"]) #main-content > .section .container {
+    width: min(100% - 40px, 680px);
+  }
+
+  body:has(.category-grid[data-cms-list="services"]) #main-content > .section .category-grid[data-cms-list="services"] .service-card {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    gap: 0;
+    padding: 32px 0;
+    min-width: 0;
+  }
+
+  body:has(.category-grid[data-cms-list="services"]) #main-content > .section .category-grid[data-cms-list="services"] .service-card h2,
+  body:has(.category-grid[data-cms-list="services"]) #main-content > .section .category-grid[data-cms-list="services"] .service-card p,
+  body:has(.category-grid[data-cms-list="services"]) #main-content > .section .category-grid[data-cms-list="services"] .service-card .text-link {
+    grid-column: 1;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: normal;
+  }
+
+  body:has(.category-grid[data-cms-list="services"]) #main-content > .section .category-grid[data-cms-list="services"] .service-card h2 {
+    grid-row: 1;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  body:has(.category-grid[data-cms-list="services"]) #main-content > .section .category-grid[data-cms-list="services"] .service-card p {
+    grid-row: 2;
+    margin: 12px 0 0;
+    line-height: 1.6;
+  }
+
+  body:has(.category-grid[data-cms-list="services"]) #main-content > .section .category-grid[data-cms-list="services"] .service-card .text-link {
+    grid-row: 3;
+    justify-self: start;
+    margin-top: 18px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
 /* Services category rows: these cards have no icon column, so keep all copy in a readable text column. */
 main#main-content > .section .category-grid[data-cms-list="services"] .service-card {
   grid-template-columns: minmax(0, 1fr) auto;
